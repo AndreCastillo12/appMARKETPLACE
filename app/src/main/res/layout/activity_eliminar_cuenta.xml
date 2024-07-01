@@ -9,6 +9,7 @@
 
     <RelativeLayout
         android:id="@+id/ToolbarRl"
+        android:background="@drawable/top_background"
         android:layout_width="match_parent"
         android:layout_height="@dimen/m_toolbar_height">
 
@@ -25,6 +26,7 @@
             android:text="@string/Txt_eliminar_cuenta"
             android:textStyle="bold"
             android:textSize="15sp"
+            android:textColor="#ffffff"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -49,12 +51,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/Btn_eliminar_mi_cuenta"
         android:text="@string/Btn_eliminar_mi_cuenta"
         app:cornerRadius="8dp"
         android:layout_alignParentBottom="true"
         android:textAllCaps="true"
+        android:textStyle="bold"
+        android:textColor="#ffffff"
+        android:background="@drawable/background_btn"
         app:icon="@drawable/ic_eliminar_cuenta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

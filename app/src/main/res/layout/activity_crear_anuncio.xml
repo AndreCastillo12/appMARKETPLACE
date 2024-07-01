@@ -55,6 +55,7 @@
                 <EditText
                     android:id="@+id/Et_marca"
                     android:hint="@string/Et_marca"
+                    android:background="@drawable/background_edittext"
                     android:inputType="textPersonName|textCapSentences"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -146,6 +147,8 @@
                 <EditText
                     android:id="@+id/Et_precio"
                     android:hint="@string/Et_precio"
+                    android:background="@drawable/background_edittext"
+
                     android:inputType="number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -168,6 +171,7 @@
                 <EditText
                     android:id="@+id/Et_titulo"
                     android:hint="@string/Et_titulo"
+                    android:background="@drawable/background_edittext"
                     android:inputType="textPersonName|textCapSentences"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -191,6 +195,7 @@
                     android:id="@+id/Et_descripcion"
                     android:hint="@string/Et_descripcion"
                     android:minHeight="100dp"
+                    android:background="@drawable/background_edittext"
                     android:inputType="textMultiLine|textCapSentences"
                     android:gravity="top|start"
                     android:layout_width="match_parent"
@@ -203,9 +208,10 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/Btn_crear_anuncio"
         android:text="@string/Btn_crear_anuncio"
+        android:background="@drawable/background_btn"
         android:layout_alignParentBottom="true"
         android:textAllCaps="true"
         android:layout_margin="10dp"

@@ -58,7 +58,7 @@
     <!--Editar perfil-->
     <string name="Txt_editar_p">Editar perfil</string>
     <string name="Et_nombres">Nombres completos</string>
-    <string name="Et_f_nac">Fecha de nac.</string>
+    <string name="Et_f_nac">Fecha de nac. (DD/MM/AA)</string>
     <string name="Cod_tef"> +00 </string>
     <string name="Et_telefono">Teléfono</string>
     <string name="Btn_actualizar">Actualizar</string>

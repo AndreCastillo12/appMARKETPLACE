@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:id="@+id/ToolbarRl"
-        android:background="@color/mi_color"
+        android:background="@color/boton_chat"
         android:layout_width="match_parent"
         android:layout_height="@dimen/m_toolbar_height">
 
@@ -98,7 +98,7 @@
             android:layout_marginEnd="7dp"
             android:src="@drawable/ico_imagen_chat"
             app:tint="@android:color/white"
-            android:backgroundTint="@color/mi_color"
+            android:backgroundTint="@color/boton_chat"
             app:fabSize="mini"
             android:elevation="0dp"
             android:layout_width="wrap_content"
@@ -110,7 +110,7 @@
             android:layout_centerVertical="true"
             android:src="@drawable/ico_enviar_chat"
             app:tint="@android:color/white"
-            android:backgroundTint="@color/mi_color"
+            android:backgroundTint="@color/boton_chat"
             app:fabSize="mini"
             android:elevation="0dp"
             android:layout_width="wrap_content"

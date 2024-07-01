@@ -67,6 +67,7 @@
             <EditText
                 android:id="@+id/Et_nombres"
                 android:hint="@string/Et_nombres"
+                android:background="@drawable/background_edittext"
                 android:inputType="textPersonName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -104,6 +105,7 @@
                 <EditText
                     android:id="@+id/Et_f_nac"
                     android:hint="@string/Et_f_nac"
+                    android:background="@drawable/background_edittext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -145,6 +147,7 @@
                 <EditText
                     android:id="@+id/Et_telefono"
                     android:hint="@string/Et_telefono"
+                    android:background="@drawable/background_edittext"
                     android:inputType="number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -155,16 +158,19 @@
 
         </RelativeLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/Btn_actualizar"
             android:text="@string/Btn_actualizar"
+            android:textStyle="bold"
             android:textAllCaps="true"
+            android:textColor="#ffffff"
+            android:background="@drawable/background_btn"
             android:layout_centerInParent="true"
             android:layout_below="@+id/RL_Cod_Tel"
             android:layout_marginTop="15dp"
             app:icon="@drawable/ic_editar"
-            android:layout_width="200dp"
-            android:layout_height="@dimen/m_button_height"/>
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"/>
 
     </RelativeLayout>
 

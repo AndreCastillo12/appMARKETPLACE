@@ -9,16 +9,16 @@
 
     <RelativeLayout
         android:id="@+id/ToolbarRl"
-        android:background="@color/mi_color"
+        android:background="@drawable/top_background"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/m_toolbar_height">
+        android:layout_height="150dp">
 
         <TextView
             android:id="@+id/TituloRl"
             android:text="@string/TituloRl"
             android:textColor="#ffffff"
             android:textStyle="bold"
-            android:textSize="17sp"
+            android:textSize="25sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"/>

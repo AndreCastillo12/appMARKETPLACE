@@ -40,10 +40,14 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/Btn_comentar"
         android:text="@string/Btn_comentar"
+        android:background="@drawable/background_btn"
+        style="@android:style/Widget.Button"
         android:layout_marginTop="15sp"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
         android:textAllCaps="true"
         android:layout_below="@id/TIL_comentario"
         android:layout_width="match_parent"

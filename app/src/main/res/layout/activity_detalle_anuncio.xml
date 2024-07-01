@@ -337,9 +337,10 @@
                 android:layout_alignParentBottom="true">
 
                 <!--Mapa-->
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_mapa"
                     android:text="@string/Btn_mapa"
+                    android:background="@drawable/background_btn"
                     android:layout_marginEnd="2dp"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
@@ -350,9 +351,10 @@
                     android:layout_height="wrap_content"/>
 
                 <!--Llamadas telefónicas-->
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_llamar"
                     android:text="@string/Btn_llamar"
+                    android:background="@drawable/background_btn"
                     android:layout_marginEnd="2dp"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
@@ -363,9 +365,10 @@
                     android:layout_height="wrap_content"/>
 
                 <!--Envio de sms-->
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_sms"
                     android:text="@string/Btn_sms"
+                    android:background="@drawable/background_btn"
                     android:layout_marginEnd="2dp"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
@@ -376,9 +379,10 @@
                     android:layout_height="wrap_content"/>
 
                 <!--Chat-->
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_chat"
                     android:text="@string/Btn_chat"
+                    android:background="@drawable/background_btn"
                     android:layout_marginEnd="2dp"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
