@@ -3,6 +3,9 @@
 
     <string name="mi_google_maps_api_key">Copias aqui tu key</string>
     <string name="default_web_client_id">666652348574-grc4la4kgrupkobv7edbrrkrc4gc0m07.apps.googleusercontent.com</string>
+    <string name="intro_title"><font color="#000000">Bienvenidos</font> \n<font color="#008b86">Todo tipo de Productos</font> \n<font color="#000000">Y todos los articulos</font></string>
+    <string name="intro_signin">¿Ya tienes una cuenta?<font color="#008b86"> Iniciar Sesion</font></string>
+    <string name="intro_text">Explore los últimos estilos de las mejores marcas, obtenga recomendaciones personalizadas disfrute de envío rápido y gratuito</string>
 
     <string name="Item_Inicio">Inicio</string>
     <string name="Item_Chats">Chats</string>
