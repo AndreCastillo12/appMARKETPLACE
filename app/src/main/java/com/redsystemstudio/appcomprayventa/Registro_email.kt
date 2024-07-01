@@ -5,9 +5,11 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Patterns
+import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.redsystemstudio.appcomprayventa.Opciones_login.Login_email
 import com.redsystemstudio.appcomprayventa.databinding.ActivityRegistroEmailBinding
 
 class Registro_email : AppCompatActivity() {
@@ -27,7 +29,12 @@ class Registro_email : AppCompatActivity() {
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Espere por favor")
         progressDialog.setCanceledOnTouchOutside(false)
+        val login = findViewById<TextView>(R.id.tv_login)
 
+        login.setOnClickListener {
+            val intent = Intent(this, Login_email::class.java)
+            startActivity(intent)
+        }
         binding.BtnRegistrar.setOnClickListener {
             validarInfo()
         }
