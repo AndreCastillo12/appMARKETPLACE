@@ -18,7 +18,7 @@ import com.redsystemstudio.appcomprayventa.databinding.CuadroDAgregarComentarioB
 import java.util.HashMap
 
 class Comentarios : AppCompatActivity() {
-
+//aassasasasa
     private lateinit var binding : ActivityComentariosBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var progressDialog : ProgressDialog
