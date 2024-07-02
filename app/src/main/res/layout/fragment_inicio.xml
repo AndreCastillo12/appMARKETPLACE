@@ -47,6 +47,7 @@
             <EditText
                 android:id="@+id/Et_buscar"
                 android:hint="@string/Et_buscar"
+                android:background="@drawable/background_edittext"
                 app:drawableStartCompat="@drawable/ic_buscar"
                 android:drawablePadding="10dp"
                 android:layout_width="match_parent"
@@ -86,6 +87,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <TextView
+        android:text="@string/Txt_productos"
+        style="@style/TextAppearance.MaterialComponents.Overline"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <!--Lista de anuncios-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/anunciosRv"

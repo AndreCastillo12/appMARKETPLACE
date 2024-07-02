@@ -80,8 +80,10 @@
     <!--Fragmento inicio-->
     <string name="Tv_locacion">Elija una locación</string>
     <string name="Et_buscar">Buscar </string>
-    <string name="Txt_categoria">Categorias</string>
+    <string name="Txt_categoria">Todas las categorías</string>
     <string name="Tv_categoria">Categoría</string>
+    <string name="Txt_productos">Todos los productos</string>
+
 
     <!--Item anuncio-->
     <string name="Tv_titulo">Nombre del producto</string>
