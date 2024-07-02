@@ -326,6 +326,19 @@
 
 
             </com.google.android.material.card.MaterialCardView>
+            <!--Boton agregar carrito-->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/BtnAddCar"
+                android:background="@drawable/background_btn"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="55dp"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:layout_below="@+id/perfilVendedor"
+                style="@android:style/Widget.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="AÑADIR AL CARRITO"/>
 
             <!--Opciones-->
             <androidx.appcompat.widget.LinearLayoutCompat
