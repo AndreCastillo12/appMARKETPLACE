@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">App Compra y Venta</string>
+    <string name="app_name">Marketplace</string>
 
     <string name="mi_google_maps_api_key">AIzaSyBCrPkWQ_4IVOUbOv1YS4-vimAxY4GR4v4</string>
     <string name="default_web_client_id">666652348574-grc4la4kgrupkobv7edbrrkrc4gc0m07.apps.googleusercontent.com</string>
