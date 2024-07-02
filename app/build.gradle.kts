@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.redsystemstudio.appcomprayventa"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.redsystemstudio.appcomprayventa"
