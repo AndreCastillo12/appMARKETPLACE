@@ -191,7 +191,7 @@ class CrearAnuncio : AppCompatActivity() {
             binding.EtDescripcion.error = "Ingrese una descripción"
             binding.EtDescripcion.requestFocus()
         }
-       else{
+        else{
             if (Edicion){
                 //True
                 actualizarAnuncio()
