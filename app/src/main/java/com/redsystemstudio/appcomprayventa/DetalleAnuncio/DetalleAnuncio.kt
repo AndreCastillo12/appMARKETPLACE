@@ -46,6 +46,7 @@ class DetalleAnuncio : AppCompatActivity() {
     private var telVendedor = ""
 
     private var favorito = false
+    private var carrito = false
 
     private lateinit var imagenSliderArrayList : ArrayList<ModeloImgSlider>
 
@@ -60,6 +61,7 @@ class DetalleAnuncio : AppCompatActivity() {
         binding.BtnLlamar.visibility = View.GONE
         binding.BtnSms.visibility = View.GONE
         binding.BtnChat.visibility = View.GONE
+        binding.IbCar.visibility = View.GONE
 
         firebaseAuth = FirebaseAuth.getInstance()
 
@@ -70,7 +72,7 @@ class DetalleAnuncio : AppCompatActivity() {
         binding.IbRegresar.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-
+        comprobarAnuncioCar()
         comprobarAnuncioFav()
         cargarInfoAnuncio()
         cargarImgAnuncio()
@@ -86,6 +88,16 @@ class DetalleAnuncio : AppCompatActivity() {
             }else{
                 //false
                 Constantes.agregarAnuncioFav(this,idAnuncio)
+            }
+        }
+
+        binding.IbCar.setOnClickListener {
+            if (carrito){
+                //true
+                Constantes.eliminarAnuncioCar(this, idAnuncio)
+            }else{
+                //false
+                Constantes.agregarAnuncioCar(this,idAnuncio)
             }
         }
 
@@ -151,7 +163,6 @@ class DetalleAnuncio : AppCompatActivity() {
             Toast.makeText(this,"El uid del vendedor es ${uidVendedor}",Toast.LENGTH_SHORT).show()
             startActivity(intent)
         }
-
     }
 
     private fun opcionesDialog() {
@@ -217,6 +228,7 @@ class DetalleAnuncio : AppCompatActivity() {
                             binding.BtnLlamar.visibility = View.GONE
                             binding.BtnSms.visibility = View.GONE
                             binding.BtnChat.visibility = View.GONE
+                            binding.IbCar.visibility = View.GONE
 
                             binding.TxtDescrVendedor.visibility = View.GONE
                             binding.perfilVendedor.visibility = View.GONE
@@ -230,6 +242,7 @@ class DetalleAnuncio : AppCompatActivity() {
                             binding.BtnLlamar.visibility = View.VISIBLE
                             binding.BtnSms.visibility = View.VISIBLE
                             binding.BtnChat.visibility = View.VISIBLE
+                            binding.IbCar.visibility = View.VISIBLE
 
                             binding.TxtDescrVendedor.visibility = View.VISIBLE
                             binding.perfilVendedor.visibility = View.VISIBLE
@@ -389,6 +402,28 @@ class DetalleAnuncio : AppCompatActivity() {
                     }else{
                         //Favorito = false
                         binding.IbFav.setImageResource(R.drawable.ic_no_favorito)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    private fun comprobarAnuncioCar(){
+        val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
+        ref.child("${firebaseAuth.uid}").child("Carrito").child(idAnuncio)
+            .addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    carrito = snapshot.exists()
+
+                    if (carrito){
+                        //carrito = true
+                        binding.IbCar.setImageResource(R.drawable.carrito)
+                    }else{
+                        //carrito = false
+                        binding.IbCar.setImageResource(R.drawable.no_carrito)
                     }
                 }
 

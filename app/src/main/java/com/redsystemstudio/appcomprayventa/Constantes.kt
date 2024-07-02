@@ -80,7 +80,45 @@ object Constantes {
         calendario.timeInMillis = tiempo
         return DateFormat.format("dd/MM/yyyy hh:mm:a", calendario).toString()
     }
+    fun agregarAnuncioCar (context : Context, idAnuncio : String){
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val tiempo = Constantes.obtenerTiempoDis()
 
+        val hashMap = HashMap<String, Any>()
+        hashMap["idAnuncio"] = idAnuncio
+        hashMap["tiempo"] = tiempo
+
+        val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
+        ref.child(firebaseAuth.uid!!).child("Carrito").child(idAnuncio)
+            .setValue(hashMap)
+            .addOnSuccessListener {
+                Toast.makeText(context,
+                    "Anuncio agregado al carrito",
+                    Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {e->
+                Toast.makeText(context,
+                    "${e.message}",
+                    Toast.LENGTH_SHORT).show()
+            }
+    }
+    fun eliminarAnuncioCar (context: Context, idAnuncio: String){
+        val firebaseAuth = FirebaseAuth.getInstance()
+
+        val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
+        ref.child(firebaseAuth.uid!!).child("Carrito").child(idAnuncio)
+            .removeValue()
+            .addOnSuccessListener {
+                Toast.makeText(context,
+                    "Anuncio eliminado del carrito",
+                    Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {e->
+                Toast.makeText(context,
+                    "${e.message}",
+                    Toast.LENGTH_SHORT).show()
+            }
+    }
     fun agregarAnuncioFav (context : Context, idAnuncio : String){
         val firebaseAuth = FirebaseAuth.getInstance()
         val tiempo = Constantes.obtenerTiempoDis()
