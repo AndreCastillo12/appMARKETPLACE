@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">App Compra y Venta</string>
 
-    <string name="mi_google_maps_api_key">Copias aqui tu key</string>
+    <string name="mi_google_maps_api_key">AIzaSyBCrPkWQ_4IVOUbOv1YS4-vimAxY4GR4v4</string>
     <string name="default_web_client_id">666652348574-grc4la4kgrupkobv7edbrrkrc4gc0m07.apps.googleusercontent.com</string>
     <string name="intro_title"><font color="#000000">Bienvenidos</font> \n<font color="#008b86">Todo tipo de Productos</font> \n<font color="#000000">Y todos los articulos</font></string>
     <string name="intro_signin">¿Ya tienes una cuenta?<font color="#008b86"> Iniciar Sesion</font></string>
