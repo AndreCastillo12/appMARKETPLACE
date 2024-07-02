@@ -69,10 +69,8 @@ class FragmentMisAnuncios : Fragment() {
         override fun createFragment(position: Int): Fragment {
             if (position == 0){
                 return Mis_Anuncios_Publicados_Fragment()
-            }else if (position == 1){
+            }else {
                 return Fav_Anuncios_Fragment()
-            }else{
-                return FragmentCarrito()
             }
         }
 
