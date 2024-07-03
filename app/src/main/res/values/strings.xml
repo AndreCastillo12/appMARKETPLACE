@@ -112,6 +112,7 @@
     <string name="Btn_llamar">Llam.</string>
     <string name="Btn_sms">SMS</string>
     <string name="Btn_chat">Chat</string>
+    <string name="Btn_carrito">Carro</string>
 
     <string name="imagenContadorTv">1/4</string>
 
@@ -165,4 +166,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!--Carrito-->
+    <string name="delete">borrar</string>
 </resources>

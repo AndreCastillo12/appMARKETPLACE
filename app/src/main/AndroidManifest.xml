@@ -29,6 +29,12 @@
         android:theme="@style/Theme.AppCompraYVenta"
         tools:targetApi="31">
         <activity
+            android:name=".CarritoManager"
+            android:exported="false" />
+        <activity
+            android:name=".Carrito"
+            android:exported="false" />
+        <activity
             android:name=".Eliminar_cuenta"
             android:exported="false" />
         <activity

@@ -47,6 +47,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.activity:activity:1.8.0")
     testImplementation("junit:junit:4.13.2")
     //implementation("com.google.firebase:firebase-analytics-ktx")
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
@@ -61,6 +62,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-messaging-ktx:23.3.1")
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.android.volley:volley:1.2.1")
+    implementation ("com.google.code.gson:gson:2.8.8")
 
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

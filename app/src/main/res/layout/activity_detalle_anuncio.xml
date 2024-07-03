@@ -28,8 +28,10 @@
             android:layout_height="wrap_content"/>
 
         <!--Carrito - no Carrito-->
+
+
         <ImageButton
-            android:id="@+id/Ib_car"
+            android:id="@+id/Ib_carrito"
             android:src="@drawable/carrito"
             android:background="@android:color/transparent"
             android:layout_toStartOf="@+id/Ib_editar"
@@ -343,67 +345,71 @@
             <!--Opciones-->
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/OpcionesLl"
-                android:layout_below="@id/perfilVendedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_alignParentBottom="true">
+                android:layout_below="@id/perfilVendedor"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
 
                 <!--Mapa-->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_mapa"
-                    android:text="@string/Btn_mapa"
-                    android:background="@drawable/background_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
+                    android:background="@drawable/background_btn"
+                    android:text="@string/Btn_mapa"
+                    android:textAllCaps="true"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_op_locacion"
-                    app:iconGravity="top"
-                    android:textAllCaps="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:iconGravity="top" />
 
                 <!--Llamadas telefónicas-->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_llamar"
-                    android:text="@string/Btn_llamar"
-                    android:background="@drawable/background_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
+                    android:background="@drawable/background_btn"
+                    android:text="@string/Btn_llamar"
+                    android:textAllCaps="true"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_op_llamar"
-                    app:iconGravity="top"
-                    android:textAllCaps="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:iconGravity="top" />
 
                 <!--Envio de sms-->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_sms"
-                    android:text="@string/Btn_sms"
-                    android:background="@drawable/background_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
+                    android:background="@drawable/background_btn"
+                    android:text="@string/Btn_sms"
+                    android:textAllCaps="true"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_op_sms"
-                    app:iconGravity="top"
-                    android:textAllCaps="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:iconGravity="top" />
 
                 <!--Chat-->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/Btn_chat"
-                    android:text="@string/Btn_chat"
-                    android:background="@drawable/background_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="2dp"
+                    android:background="@drawable/background_btn"
+                    android:text="@string/Btn_chat"
+                    android:textAllCaps="true"
                     android:textSize="12sp"
                     app:cornerRadius="8dp"
                     app:icon="@drawable/ic_op_chat"
-                    app:iconGravity="top"
-                    android:textAllCaps="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:iconGravity="top" />
+
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

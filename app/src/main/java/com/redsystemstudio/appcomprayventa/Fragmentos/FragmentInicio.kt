@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorAnuncio
 import com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorCategoria
+import com.redsystemstudio.appcomprayventa.Carrito
 import com.redsystemstudio.appcomprayventa.Constantes
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloCategoria
@@ -109,6 +110,12 @@ class FragmentInicio : Fragment() {
                 Toast.makeText(context,"No se ha ingresado una consulta",Toast.LENGTH_SHORT).show()
             }
         }
+
+        binding.IbCarrito.setOnClickListener{
+            val intent = Intent(mContext, Carrito::class.java)
+            startActivity(intent)
+        }
+
 
     }
 
