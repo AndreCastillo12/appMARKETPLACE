@@ -196,13 +196,13 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:text="@string/Txt_olvide_pass"
+                    android:text="He olvidado mi contraseña"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
                 <TextView
                     android:id="@+id/Tv_recuperar"
-                    android:text="@string/Tv_recuperar"
+                    android:text="Recuperar"
                     android:textColor="#3498D8"
                     android:textStyle="bold"
                     android:layout_marginStart="8dp"
