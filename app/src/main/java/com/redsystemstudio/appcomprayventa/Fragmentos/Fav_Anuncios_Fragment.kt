@@ -27,7 +27,7 @@ class Fav_Anuncios_Fragment : Fragment() {
     private lateinit var mContext : Context
     private lateinit var firebaseAuth: FirebaseAuth
 
-    private lateinit var anunciosArrayListCar : ArrayList<ModeloAnuncio>
+    private lateinit var anunciosArrayList: ArrayList<ModeloAnuncio>
     private lateinit var anunciosAdaptador : AdaptadorAnuncio
 
     override fun onAttach(context: Context) {
@@ -81,13 +81,13 @@ class Fav_Anuncios_Fragment : Fragment() {
     }
 
     private fun cargarAnunciosFav() {
-        anunciosArrayListCar = ArrayList()
+        anunciosArrayList = ArrayList()
 
         val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
-        ref.child(firebaseAuth.uid!!).child("Carrito")
+        ref.child(firebaseAuth.uid!!).child("Favoritos")
             .addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    anunciosArrayListCar.clear()
+                    anunciosArrayList.clear()
                     for (ds in snapshot.children){
                         val idAnuncio = "${ds.child("idAnuncio").value}"
 
@@ -97,7 +97,7 @@ class Fav_Anuncios_Fragment : Fragment() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     try {
                                         val modeloAnuncio = snapshot.getValue(ModeloAnuncio::class.java)
-                                        anunciosArrayListCar.add(modeloAnuncio!!)
+                                        anunciosArrayList.add(modeloAnuncio!!)
                                     }catch (e:Exception){
 
                                     }
@@ -110,7 +110,7 @@ class Fav_Anuncios_Fragment : Fragment() {
                     }
 
                     Handler().postDelayed({
-                        anunciosAdaptador = AdaptadorAnuncio(mContext, anunciosArrayListCar)
+                        anunciosAdaptador = AdaptadorAnuncio(mContext, anunciosArrayList)
                         binding.anunciosRv.adapter = anunciosAdaptador
                     }, 500)
                 }
