@@ -67,17 +67,9 @@ class FragmentCuenta : Fragment() {
         }
 
         binding.BtnEliminarAnuncios.setOnClickListener {
-            val alertDialog = MaterialAlertDialogBuilder(mContext)
-            alertDialog.setTitle("Eliminar todos mis anuncios")
-                .setMessage("¿Estás seguro(a) de eliminar todos tus anuncios?")
-                .setPositiveButton("Eliminar"){dialog, which->
-                    eliminarTodosMiAnuncios()
-                }
-                .setNegativeButton("Cancelar"){dialog, which->
-                    dialog.dismiss()
-                }
-                .show()
+            verificarAnuncios()
         }
+
 
         binding.BtnEliminarCuenta.setOnClickListener {
              startActivity(Intent(mContext, Eliminar_cuenta::class.java))
@@ -224,4 +216,29 @@ class FragmentCuenta : Fragment() {
 
     }
 
+    private fun verificarAnuncios() {
+        val miUid = firebaseAuth.uid
+        val alertDialog = MaterialAlertDialogBuilder(mContext)
+        val ref = FirebaseDatabase.getInstance().getReference("Anuncios").orderByChild("uid").equalTo(miUid)
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    alertDialog.setTitle("Eliminar todos mis anuncios")
+                        .setMessage("¿Estás seguro(a) de eliminar todos tus anuncios?")
+                        .setPositiveButton("Eliminar"){dialog, which->
+                            eliminarTodosMiAnuncios()
+                        }
+                        .setNegativeButton("Cancelar"){dialog, which->
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    Toast.makeText(mContext, "No hay anuncios que eliminar", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
 }

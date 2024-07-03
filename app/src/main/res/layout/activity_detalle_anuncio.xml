@@ -32,7 +32,7 @@
 
         <ImageButton
             android:id="@+id/Ib_carrito"
-            android:src="@drawable/carrito"
+            android:src="@drawable/carrito_add"
             android:background="@android:color/transparent"
             android:layout_toStartOf="@+id/Ib_editar"
             android:layout_centerVertical="true"
@@ -99,6 +99,7 @@
             <TextView
                 android:id="@+id/Tv_simbolo_precio"
                 android:text="@string/Tv_simbolo_precio"
+                android:textStyle="bold"
                 android:layout_below="@+id/imagenSliderVP"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -109,7 +110,8 @@
                 android:text="@string/Tv_precio"
                 android:layout_below="@+id/imagenSliderVP"
                 android:layout_toEndOf="@+id/Tv_simbolo_precio"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="10dp"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

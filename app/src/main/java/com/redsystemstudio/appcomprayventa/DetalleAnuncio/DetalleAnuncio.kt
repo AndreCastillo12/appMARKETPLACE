@@ -503,9 +503,9 @@ class DetalleAnuncio : AppCompatActivity() {
 
     private fun actualizarBotonCarrito() {
         if (carrito) {
-            binding.IbCarrito.setImageResource(R.drawable.carrito)
-        } else {
             binding.IbCarrito.setImageResource(R.drawable.no_carrito)
+        } else {
+            binding.IbCarrito.setImageResource(R.drawable.carrito_add)
         }
     }
 }

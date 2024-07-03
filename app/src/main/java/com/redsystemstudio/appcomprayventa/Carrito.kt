@@ -31,6 +31,10 @@ class Carrito : AppCompatActivity() {
 
         actualizarTotales()
 
+        binding.backBtn.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         binding.checkoutBtn.setOnClickListener {
             // Implementar lógica de pago aquí
         }
