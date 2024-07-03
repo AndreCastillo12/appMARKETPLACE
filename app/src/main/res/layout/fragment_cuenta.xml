@@ -38,6 +38,7 @@
             android:layout_below="@+id/Iv_perfil"
             android:layout_marginTop="10dp"
             android:textStyle="bold"
+            android:textSize="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -162,76 +163,108 @@
             android:layout_height="wrap_content"/>
 
         <!--Editar perfil-->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/Btn_editar_perfil"
-            android:layout_width="220dp"
-            android:layout_height="@dimen/m_button_height"
-            android:layout_below="@+id/TxtOpciones"
-            android:layout_centerInParent="true"
-            android:text="@string/Btn_editar_perfil"
-            android:textAllCaps="true"
-            app:icon="@drawable/ic_editar" />
 
         <!--Cambiar password-->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/Btn_cambiar_pass"
-            android:layout_width="220dp"
-            android:layout_height="@dimen/m_button_height"
-            android:layout_below="@+id/Btn_editar_perfil"
-            android:layout_centerInParent="true"
-            android:text="@string/Btn_cambiar_pass"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/Btn_editar_perfil"
+            android:layout_width="160dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/TxtOpciones"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="22dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/background_btn"
+            android:text="@string/Btn_editar_perfil"
             android:textAllCaps="true"
-            app:icon="@drawable/ic_password" />
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            app:icon="@drawable/ic_editar" />
 
         <!--Verificar cuenta-->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/Btn_verificar_cuenta"
-            android:layout_width="220dp"
-            android:layout_height="@dimen/m_button_height"
-            android:layout_below="@+id/Btn_cambiar_pass"
-            android:layout_centerInParent="true"
-            android:text="@string/Btn_verificar_cuenta"
-            android:textAllCaps="true"
-            app:icon="@drawable/ic_verificar" />
 
         <!--Eliminar todos mis anuncios-->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/Btn_eliminar_anuncios"
-            android:text="@string/Btn_eliminar_anuncios"
-            android:layout_below="@+id/Btn_verificar_cuenta"
-            android:layout_centerInParent="true"
-            android:textAllCaps="true"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_eliminar_anuncios"/>
 
         <!--Eliminar cuenta -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/Btn_eliminar_cuenta"
-            android:text="@string/Btn_eliminar_cuenta"
-            android:layout_below="@+id/Btn_eliminar_anuncios"
-            android:layout_centerInParent="true"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/Btn_cambiar_pass"
+            android:layout_width="180dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/Btn_editar_perfil"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="-28dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/background_btn"
+            android:text="@string/Btn_cambiar_pass"
             android:textAllCaps="true"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            app:icon="@drawable/ic_eliminar_cuenta"/>
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            app:icon="@drawable/ic_password" />
 
-
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/Btn_verificar_cuenta"
+            android:layout_width="160dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="6dp"
+            android:layout_below="@+id/Btn_cambiar_pass"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="22dp"
+            android:background="@drawable/background_btn"
+            android:text="@string/Btn_verificar_cuenta"
+            android:textAllCaps="true"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            app:icon="@drawable/ic_verificar" />
 
         <!--Cerrar sesión-->
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/Btn_eliminar_anuncios"
+            android:layout_width="160dp"
+            android:layout_height="30dp"
+            android:layout_below="@+id/Btn_verificar_cuenta"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="-29dp"
+            android:layout_marginEnd="23dp"
+            android:background="@drawable/background_btn"
+            android:text="@string/Btn_eliminar_anuncios"
+            android:textAllCaps="true"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            app:icon="@drawable/ic_eliminar_anuncios" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/Btn_eliminar_cuenta"
+            android:layout_width="160dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="4dp"
+            android:layout_below="@+id/Btn_eliminar_anuncios"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="22dp"
+            android:background="@drawable/background_btn"
+            android:text="@string/Btn_eliminar_cuenta"
+            android:textAllCaps="true"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            app:icon="@drawable/ic_eliminar_cuenta" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/Btn_cerrar_sesion"
-            android:layout_width="220dp"
-            android:layout_height="@dimen/m_button_height"
+            android:layout_width="160dp"
+            android:layout_height="30dp"
             android:layout_below="@+id/Btn_eliminar_cuenta"
-            android:layout_centerInParent="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="-30dp"
+            android:layout_marginEnd="22dp"
+            android:background="@drawable/background_btn"
             android:text="@string/Btn_cerrar_sesion"
             android:textAllCaps="true"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
             app:icon="@drawable/ic_salir" />
-
-
     </RelativeLayout>
-
-
-
 </ScrollView>

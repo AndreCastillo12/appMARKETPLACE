@@ -50,9 +50,9 @@
 
     <string name="TxtOpciones">Opciones</string>
     <string name="Btn_editar_perfil">Editar perfil</string>
-    <string name="Btn_cambiar_pass">Cambiar password</string>
+    <string name="Btn_cambiar_pass">Cambiar contraseña</string>
     <string name="Btn_verificar_cuenta">Verificar cuenta</string>
-    <string name="Btn_eliminar_anuncios">Eliminar mis anuncios</string>
+    <string name="Btn_eliminar_anuncios">Eliminar anuncios</string>
     <string name="Btn_eliminar_cuenta">Eliminar cuenta</string>
     <string name="Btn_cerrar_sesion">Cerrar sesión</string>
 
