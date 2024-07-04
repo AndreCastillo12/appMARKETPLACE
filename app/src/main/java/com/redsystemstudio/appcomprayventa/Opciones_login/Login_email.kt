@@ -86,7 +86,7 @@ class Login_email : AppCompatActivity() {
                 progressDialog.dismiss()
                 Toast.makeText(
                     this,
-                    "No se pudo iniciar sesión debido a ${e.message}",
+                    "No se pudo iniciar sesión debido a informacion incorrecta",
                     Toast.LENGTH_SHORT
                 ).show()
             }
