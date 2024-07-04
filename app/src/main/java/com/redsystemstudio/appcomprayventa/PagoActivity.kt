@@ -14,11 +14,11 @@ import TX_VALUE
 import Transaction
 import android.content.Intent
 import android.os.Bundle
-
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.redsystemstudio.appcomprayventa.databinding.ActivityPagoBinding
+import com.redsystemstudio.appcomprayventa.utils.SignatureUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -51,12 +51,20 @@ class PagoActivity : AppCompatActivity() {
     private fun realizarPagoConYape() {
         val apiService = RetrofitClient.instance.create(PayUApiService::class.java)
 
+        val apiKey = "UcQ6Bilo89CxD2pp281v2v7rS4"
+        val merchantId = "1019543"
+        val referenceCode = "ORDER1"
+        val amount = "100.00"
+        val currency = "PEN"
+
+        val signature = SignatureUtils.generarFirma(apiKey, merchantId, referenceCode, amount, currency)
+
         val merchant = Merchant(apiLogin = "nZo877xX0HZvwPI", apiKey = "UcQ6Bilo89CxD2pp281v2v7rS4")
         val order = Order(
             accountId = "1019543",
-            referenceCode = "ORDER1",
-            description = "compra de merketplace",
-            signature = "FIRMA_GENERADA",
+            referenceCode = referenceCode,
+            description = "Compra de marketplace",
+            signature = signature,
             additionalValues = AdditionalValues(TX_VALUE(value = 100.0)),
             buyer = Buyer(
                 merchantBuyerId = "COMPRADOR_ID",
@@ -110,7 +118,7 @@ class PagoActivity : AppCompatActivity() {
         )
 
         apiService.createPayment(paymentRequest).enqueue(object : Callback<PaymentResponse> {
-            override fun onResponse(call: retrofit2.Call<PaymentResponse>, response: Response<PaymentResponse>) {
+            override fun onResponse(call: Call<PaymentResponse>, response: Response<PaymentResponse>) {
                 if (response.isSuccessful) {
                     val paymentResponse = response.body()
                     // Manejar la respuesta del pago
@@ -125,7 +133,7 @@ class PagoActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: retrofit2.Call<PaymentResponse>, t: Throwable) {
+            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
                 // Manejar la falla
                 binding.resultadoPago.visibility = View.VISIBLE
                 binding.resultadoPago.text = "Fallo en el pago: ${t.message}"
