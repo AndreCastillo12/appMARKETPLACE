@@ -17,11 +17,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.internal.bind.TypeAdapters.UUID
+import com.google.gson.internal.bind.TypeAdapters.UUID_FACTORY
 import com.redsystemstudio.appcomprayventa.databinding.ActivityPagoBinding
 import com.redsystemstudio.appcomprayventa.utils.SignatureUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.UUID
 
 class PagoActivity : AppCompatActivity() {
 
@@ -119,6 +122,9 @@ class PagoActivity : AppCompatActivity() {
 
         apiService.createPayment(paymentRequest).enqueue(object : Callback<PaymentResponse> {
             override fun onResponse(call: Call<PaymentResponse>, response: Response<PaymentResponse>) {
+                val rawJson = response.raw().body?.string() ?: ""
+                Log.d("PagoActivity", "Raw JSON response: $rawJson")
+
                 if (response.isSuccessful) {
                     val paymentResponse = response.body()
                     // Manejar la respuesta del pago
@@ -127,17 +133,17 @@ class PagoActivity : AppCompatActivity() {
                     mostrarConfirmacionPago(paymentResponse?.transactionResponse?.transactionId)
                 } else {
                     // Manejar el error
+                    Log.e("PagoActivity", "Error en el pago: $rawJson")
                     binding.resultadoPago.visibility = View.VISIBLE
-                    binding.resultadoPago.text = "Error en el pago: ${response.errorBody()?.string()}"
-                    Log.e("PagoActivity", "Error en el pago: ${response.errorBody()?.string()}")
+                    binding.resultadoPago.text = "Error en el pago: $rawJson"
                 }
             }
 
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
                 // Manejar la falla
+                Log.e("PagoActivity", "Fallo en el pago: ${t.message}", t)
                 binding.resultadoPago.visibility = View.VISIBLE
                 binding.resultadoPago.text = "Fallo en el pago: ${t.message}"
-                Log.e("PagoActivity", "Fallo en el pago: ${t.message}")
             }
         })
     }
