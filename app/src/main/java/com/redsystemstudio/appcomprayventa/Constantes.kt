@@ -132,7 +132,7 @@ object Constantes {
             .setValue(hashMap)
             .addOnSuccessListener {
                 Toast.makeText(context,
-                    "Anuncio agregado a Favoritos",
+                    "Producto agregado a Favoritos",
                     Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {e->
@@ -150,7 +150,7 @@ object Constantes {
             .removeValue()
             .addOnSuccessListener {
                 Toast.makeText(context,
-                    "Anuncio eliminado de Favoritos",
+                    "Producto eliminado de Favoritos",
                     Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {e->

@@ -99,6 +99,7 @@
             <TextView
                 android:id="@+id/Tv_simbolo_precio"
                 android:text="@string/Tv_simbolo_precio"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 android:layout_below="@+id/imagenSliderVP"
                 android:layout_width="wrap_content"
@@ -110,11 +111,22 @@
                 android:text="@string/Tv_precio"
                 android:layout_below="@+id/imagenSliderVP"
                 android:layout_toEndOf="@+id/Tv_simbolo_precio"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:textStyle="bold"
+                android:layout_marginTop="1.5dp"
+                android:textSize="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/icon_moneda"
+                android:layout_below="@id/imagenSliderVP"
+                android:layout_toEndOf="@+id/Tv_precio"
+                android:layout_marginStart="5dp"
 
+                />
             <!--Condición-->
             <TextView
                 android:id="@+id/Tv_condicion"

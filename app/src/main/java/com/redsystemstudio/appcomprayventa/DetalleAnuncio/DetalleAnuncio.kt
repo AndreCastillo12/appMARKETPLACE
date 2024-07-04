@@ -498,7 +498,7 @@ class DetalleAnuncio : AppCompatActivity() {
                         cantidad = 1
                     )
                     carritoManager.agregarAlCarrito(carritoItem)
-                    Toast.makeText(this@DetalleAnuncio, "Anuncio agregado al carrito", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DetalleAnuncio, "Producto agregado al carrito", Toast.LENGTH_SHORT).show()
                 }
             }
 
