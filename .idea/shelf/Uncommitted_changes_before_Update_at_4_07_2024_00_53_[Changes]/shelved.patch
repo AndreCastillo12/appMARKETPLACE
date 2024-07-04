@@ -1,0 +1,896 @@
+Index: gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Project-wide Gradle settings.\r\n# IDE (e.g. Android Studio) users:\r\n# Gradle settings configured through the IDE *will override*\r\n# any settings specified in this file.\r\n# For more details on how to configure your build environment visit\r\n# http://www.gradle.org/docs/current/userguide/build_environment.html\r\n# Specifies the JVM arguments used for the daemon process.\r\n# The setting is particularly useful for tweaking memory settings.\r\norg.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\r\n# When configured, Gradle will run in incubating parallel mode.\r\n# This option should only be used with decoupled projects. More details, visit\r\n# http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects\r\n# org.gradle.parallel=true\r\n# AndroidX package structure to make it clearer which packages are bundled with the\r\n# Android operating system, and which are packaged with your app's APK\r\n# https://developer.android.com/topic/libraries/support-library/androidx-rn\r\nandroid.useAndroidX=true\r\n# Kotlin code style for this project: \"official\" or \"obsolete\":\r\nkotlin.code.style=official\r\n# Enables namespacing of each library's R class so that its R class includes only the\r\n# resources declared in the library itself and none from the library's dependencies,\r\n# thereby reducing the size of the R class for that library\r\nandroid.nonTransitiveRClass=true
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/gradle.properties b/gradle.properties
+--- a/gradle.properties	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/gradle.properties	(date 1720071386907)
+@@ -20,4 +20,5 @@
+ # Enables namespacing of each library's R class so that its R class includes only the
+ # resources declared in the library itself and none from the library's dependencies,
+ # thereby reducing the size of the R class for that library
+-android.nonTransitiveRClass=true
+\ No newline at end of file
++android.nonTransitiveRClass=true
++
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa.Fragmentos\r\n\r\nimport android.app.Activity\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.content.SharedPreferences\r\nimport android.location.Location\r\nimport android.location.LocationManager\r\nimport android.os.Bundle\r\nimport android.text.Editable\r\nimport android.text.TextWatcher\r\nimport androidx.fragment.app.Fragment\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.Toast\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport com.google.firebase.database.DataSnapshot\r\nimport com.google.firebase.database.DatabaseError\r\nimport com.google.firebase.database.FirebaseDatabase\r\nimport com.google.firebase.database.ValueEventListener\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorCategoria\r\nimport com.redsystemstudio.appcomprayventa.Carrito\r\nimport com.redsystemstudio.appcomprayventa.Constantes\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloCategoria\r\nimport com.redsystemstudio.appcomprayventa.R\r\nimport com.redsystemstudio.appcomprayventa.RvListenerCategoria\r\nimport com.redsystemstudio.appcomprayventa.SeleccionarUbicacion\r\nimport com.redsystemstudio.appcomprayventa.databinding.FragmentInicioBinding\r\n\r\n\r\nclass FragmentInicio : Fragment() {\r\n\r\n    private lateinit var binding : FragmentInicioBinding\r\n\r\n\r\n    private companion object{\r\n        private const val MAX_DISTANCIA_MOSTRAR_ANUNCIO = 10\r\n    }\r\n\r\n    private lateinit var mContext : Context\r\n\r\n    private lateinit var anuncioArrayList : ArrayList<ModeloAnuncio>\r\n    private lateinit var adaptadorAnuncio : AdaptadorAnuncio\r\n    private lateinit var locacionSP : SharedPreferences\r\n\r\n    private var actualLatitud = 0.0\r\n    private var actualLongitud = 0.0\r\n    private var actualDireccion = \"\"\r\n\r\n    override fun onAttach(context: Context) {\r\n        mContext = context\r\n        super.onAttach(context)\r\n    }\r\n\r\n    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {\r\n        // Inflate the layout for this fragment\r\n        binding = FragmentInicioBinding.inflate(LayoutInflater.from(mContext),container,false)\r\n        return binding.root\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        locacionSP = mContext.getSharedPreferences(\"LOCACION_SP\", Context.MODE_PRIVATE)\r\n\r\n        actualLatitud = locacionSP.getFloat(\"ACTUAL_LATITUD\", 0.0f).toDouble()\r\n        actualLongitud = locacionSP.getFloat(\"ACTUAL_LONGITUD\", 0.0f).toDouble()\r\n        actualDireccion = locacionSP.getString(\"ACTUAL_DIRECCION\", \"\")!!\r\n\r\n        if (actualLatitud != 0.0 && actualLongitud !=0.0){\r\n            binding.TvLocacion.text = actualDireccion\r\n        }\r\n\r\n        cargarCategorias()\r\n        cargarAnuncios(\"Todos\")\r\n\r\n        binding.TvLocacion.setOnClickListener {\r\n            val intent = Intent(mContext, SeleccionarUbicacion::class.java)\r\n            seleccionarUbicacionARL.launch(intent)\r\n        }\r\n\r\n        binding.EtBuscar.addTextChangedListener(object : TextWatcher{\r\n            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {\r\n\r\n            }\r\n\r\n            override fun onTextChanged(filtro: CharSequence?, p1: Int, p2: Int, p3: Int) {\r\n                try {\r\n                    val consulta = filtro.toString()\r\n                    adaptadorAnuncio.filter.filter(consulta)\r\n                }catch (e:Exception){\r\n\r\n                }\r\n            }\r\n\r\n            override fun afterTextChanged(p0: Editable?) {\r\n\r\n            }\r\n        })\r\n\r\n        binding.IbLimpiar.setOnClickListener {\r\n            val consulta = binding.EtBuscar.text.toString().trim()\r\n            if (consulta.isNotEmpty()){\r\n                binding.EtBuscar.setText(\"\")\r\n                Toast.makeText(context,\"Se ha limpiado el campo de búsqueda\",Toast.LENGTH_SHORT).show()\r\n            }else{\r\n                Toast.makeText(context,\"No se ha ingresado una consulta\",Toast.LENGTH_SHORT).show()\r\n            }\r\n        }\r\n\r\n        binding.IbCarrito.setOnClickListener{\r\n            val intent = Intent(mContext, Carrito::class.java)\r\n            startActivity(intent)\r\n        }\r\n\r\n\r\n    }\r\n\r\n    private val seleccionarUbicacionARL = registerForActivityResult(\r\n        ActivityResultContracts.StartActivityForResult()){resultado->\r\n        if (resultado.resultCode == Activity.RESULT_OK){\r\n            val data = resultado.data\r\n            if (data!=null){\r\n                actualLatitud = data.getDoubleExtra(\"latitud\", 0.0)\r\n                actualLongitud = data.getDoubleExtra(\"longitud\",0.0)\r\n                actualDireccion = data.getStringExtra(\"direccion\").toString()\r\n\r\n                locacionSP.edit()\r\n                    .putFloat(\"ACTUAL_LATITUD\", actualLatitud.toFloat())\r\n                    .putFloat(\"ACTUAL_LONGITUD\", actualLongitud.toFloat())\r\n                    .putString(\"ACTUAL_DIRECCION\", actualDireccion)\r\n                    .apply()\r\n\r\n                binding.TvLocacion.text = actualDireccion\r\n\r\n                cargarAnuncios(\"Todos\")\r\n            }else{\r\n                Toast.makeText(\r\n                    context, \"Cancelado\",Toast.LENGTH_SHORT\r\n                ).show()\r\n            }\r\n        }\r\n    }\r\n\r\n    private fun cargarCategorias(){\r\n        val categoriaArrayList = ArrayList<ModeloCategoria>()\r\n        for (i in 0 until Constantes.categorias.size){\r\n            val modeloCategoria = ModeloCategoria(Constantes.categorias[i], Constantes.categoriasIcono[i])\r\n            categoriaArrayList.add(modeloCategoria)\r\n        }\r\n\r\n        val adaptadorCategoria = AdaptadorCategoria(\r\n            mContext,\r\n            categoriaArrayList,\r\n            object : RvListenerCategoria{\r\n                override fun onCategoriaClick(modeloCategoria: ModeloCategoria) {\r\n                    val categoriaSeleccionada = modeloCategoria.categoria\r\n                    cargarAnuncios(categoriaSeleccionada)\r\n                }\r\n            }\r\n        )\r\n\r\n        binding.categoriaRv.adapter = adaptadorCategoria\r\n    }\r\n\r\n    private fun cargarAnuncios(categoria : String){\r\n        anuncioArrayList = ArrayList()\r\n\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.addValueEventListener(object : ValueEventListener{\r\n            override fun onDataChange(snapshot: DataSnapshot) {\r\n                anuncioArrayList.clear()\r\n                for (ds in snapshot.children){\r\n                    try {\r\n                        val modeloAnuncio = ds.getValue(ModeloAnuncio::class.java)\r\n                        val distancia = calcularDistanciaKM(\r\n                            modeloAnuncio?.latitud ?: 0.0,\r\n                            modeloAnuncio?.longitud ?: 0.0\r\n                        )\r\n                        if (categoria == \"Todos\"){\r\n                            if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){\r\n                                anuncioArrayList.add(modeloAnuncio!!)\r\n                            }\r\n                        }else{\r\n                            if (modeloAnuncio!!.categoria.equals(categoria)){\r\n                                if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){\r\n                                    anuncioArrayList.add(modeloAnuncio)\r\n                                }\r\n                            }\r\n                        }\r\n                    }catch (e:Exception){\r\n\r\n                    }\r\n                }\r\n                adaptadorAnuncio = AdaptadorAnuncio(mContext, anuncioArrayList)\r\n                binding.anunciosRv.adapter = adaptadorAnuncio\r\n\r\n            }\r\n\r\n            override fun onCancelled(error: DatabaseError) {\r\n                TODO(\"Not yet implemented\")\r\n            }\r\n        })\r\n    }\r\n\r\n    private fun calcularDistanciaKM(latitud : Double , longitud : Double) : Double{\r\n        val puntoPartida = Location(LocationManager.NETWORK_PROVIDER)\r\n        puntoPartida.latitude = actualLatitud\r\n        puntoPartida.longitude = actualLongitud\r\n\r\n        val puntoFinal = Location(LocationManager.NETWORK_PROVIDER)\r\n        puntoFinal.latitude = latitud\r\n        puntoFinal.longitude = longitud\r\n\r\n        val distanciaMetros = puntoPartida.distanceTo(puntoFinal).toDouble()\r\n        return distanciaMetros/1000\r\n    }\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt	(date 1720071444610)
+@@ -25,12 +25,10 @@
+ import com.redsystemstudio.appcomprayventa.Constantes
+ import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
+ import com.redsystemstudio.appcomprayventa.Modelo.ModeloCategoria
+-import com.redsystemstudio.appcomprayventa.R
+ import com.redsystemstudio.appcomprayventa.RvListenerCategoria
+ import com.redsystemstudio.appcomprayventa.SeleccionarUbicacion
+ import com.redsystemstudio.appcomprayventa.databinding.FragmentInicioBinding
+ 
+-
+ class FragmentInicio : Fragment() {
+ 
+     private lateinit var binding : FragmentInicioBinding
+@@ -217,7 +215,7 @@
+ 
+         val distanciaMetros = puntoPartida.distanceTo(puntoFinal).toDouble()
+         return distanciaMetros/1000
+-    }
++        }
+ 
+ 
+ }
+\ No newline at end of file
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    id(\"com.android.application\")\r\n    id(\"org.jetbrains.kotlin.android\")\r\n    id(\"com.google.gms.google-services\")\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.redsystemstudio.appcomprayventa\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.redsystemstudio.appcomprayventa\"\r\n        minSdk = 24\r\n        targetSdk = 33\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n\r\n    buildFeatures{\r\n        viewBinding = true\r\n    }\r\n\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation(\"androidx.core:core-ktx:1.9.0\")\r\n    implementation(\"androidx.appcompat:appcompat:1.6.1\")\r\n    implementation(\"com.google.android.material:material:1.9.0\")\r\n    implementation(\"androidx.constraintlayout:constraintlayout:2.1.4\")\r\n    implementation(\"androidx.activity:activity:1.8.0\")\r\n    implementation(\"com.google.firebase:firebase-messaging:24.0.0\")\r\n    testImplementation(\"junit:junit:4.13.2\")\r\n    //implementation(\"com.google.firebase:firebase-analytics-ktx\")\r\n    implementation(platform(\"com.google.firebase:firebase-bom:32.3.1\"))\r\n    implementation(\"com.google.firebase:firebase-auth-ktx\")\r\n    implementation(\"com.google.firebase:firebase-core:16.0.9\")\r\n    implementation(\"com.google.firebase:firebase-database-ktx\")\r\n    implementation(\"com.google.firebase:firebase-storage-ktx\")\r\n    implementation (\"com.github.bumptech.glide:glide:4.16.0\")\r\n    implementation (\"com.google.android.gms:play-services-maps:18.1.0\")\r\n    implementation (\"com.google.android.libraries.places:places:3.1.0\")\r\n    implementation (\"com.hbb20:ccp:2.7.0\")\r\n    implementation (\"com.github.chrisbanes:PhotoView:2.3.0\")\r\n    implementation (\"com.google.firebase:firebase-messaging-ktx:23.3.1\")\r\n    implementation (\"de.hdodenhof:circleimageview:3.1.0\")\r\n    implementation (\"com.android.volley:volley:1.2.1\")\r\n    implementation (\"com.google.code.gson:gson:2.8.8\")\r\n\r\n    implementation(\"com.google.android.gms:play-services-auth:21.0.0\")\r\n    androidTestImplementation(\"androidx.test.ext:junit:1.1.5\")\r\n    androidTestImplementation(\"androidx.test.espresso:espresso-core:3.5.1\")\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/build.gradle.kts	(date 1720071386922)
+@@ -16,6 +16,7 @@
+         versionName = "1.0"
+ 
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
++
+     }
+ 
+     buildTypes {
+@@ -69,5 +70,10 @@
+     implementation("com.google.android.gms:play-services-auth:21.0.0")
+     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
++
++
++    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
++    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
++    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+ }
+ 
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa\r\n\r\nimport android.content.Context\r\nimport com.google.gson.Gson\r\nimport com.redsystemstudio.appcomprayventa.Modelo.CarritoItem\r\n\r\nclass CarritoManager(private val context: Context) {\r\n\r\n    private val sharedPreferences = context.getSharedPreferences(\"CARRITO_PREF\", Context.MODE_PRIVATE)\r\n    private val gson = Gson()\r\n\r\n    fun agregarAlCarrito(item: CarritoItem) {\r\n        val carritoItems = obtenerCarrito().toMutableList()\r\n        carritoItems.add(item)\r\n        guardarCarrito(carritoItems)\r\n    }\r\n\r\n    fun eliminarDelCarrito(item: CarritoItem) {\r\n        val carritoItems = obtenerCarrito().toMutableList()\r\n        carritoItems.removeIf { it.id == item.id }\r\n        guardarCarrito(carritoItems)\r\n    }\r\n\r\n    fun obtenerCarrito(): List<CarritoItem> {\r\n        val carritoJson = sharedPreferences.getString(\"CARRITO\", \"[]\")\r\n        return gson.fromJson(carritoJson, Array<CarritoItem>::class.java).toList()\r\n    }\r\n\r\n    private fun guardarCarrito(carritoItems: List<CarritoItem>) {\r\n        val editor = sharedPreferences.edit()\r\n        val carritoJson = gson.toJson(carritoItems)\r\n        editor.putString(\"CARRITO\", carritoJson)\r\n        editor.apply()\r\n    }\r\n\r\n    fun calcularSubtotal(): Double {\r\n        val carritoItems = obtenerCarrito()\r\n        return carritoItems.sumByDouble { it.precio * it.cantidad }\r\n    }\r\n\r\n    fun calcularTotalImpuestos(impuestoPorcentaje: Double): Double {\r\n        val subtotal = calcularSubtotal()\r\n        return subtotal * (impuestoPorcentaje / 100)\r\n    }\r\n\r\n    fun calcularTotal(impuestoPorcentaje: Double): Double {\r\n        val subtotal = calcularSubtotal()\r\n        val impuestos = calcularTotalImpuestos(impuestoPorcentaje)\r\n        return subtotal + impuestos\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt	(date 1720071387010)
+@@ -3,12 +3,18 @@
+ import android.content.Context
+ import com.google.gson.Gson
+ import com.redsystemstudio.appcomprayventa.Modelo.CarritoItem
++import com.google.firebase.auth.FirebaseAuth
+ 
+ class CarritoManager(private val context: Context) {
+ 
+     private val sharedPreferences = context.getSharedPreferences("CARRITO_PREF", Context.MODE_PRIVATE)
+     private val gson = Gson()
+ 
++    private fun getUserId(): String {
++        val firebaseAuth = FirebaseAuth.getInstance()
++        return firebaseAuth.currentUser?.uid ?: ""
++    }
++
+     fun agregarAlCarrito(item: CarritoItem) {
+         val carritoItems = obtenerCarrito().toMutableList()
+         carritoItems.add(item)
+@@ -22,14 +28,14 @@
+     }
+ 
+     fun obtenerCarrito(): List<CarritoItem> {
+-        val carritoJson = sharedPreferences.getString("CARRITO", "[]")
++        val carritoJson = sharedPreferences.getString(getUserId(), "[]")
+         return gson.fromJson(carritoJson, Array<CarritoItem>::class.java).toList()
+     }
+ 
+     private fun guardarCarrito(carritoItems: List<CarritoItem>) {
+         val editor = sharedPreferences.edit()
+         val carritoJson = gson.toJson(carritoItems)
+-        editor.putString("CARRITO", carritoJson)
++        editor.putString(getUserId(), carritoJson)
+         editor.apply()
+     }
+ 
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt
+new file mode 100644
+--- /dev/null	(date 1720071387178)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt	(date 1720071387178)
+@@ -0,0 +1,114 @@
++data class PaymentRequest(
++    val language: String,
++    val command: String,
++    val merchant: Merchant,
++    val transaction: Transaction,
++    val test: Boolean = true
++)
++
++data class Merchant(
++    val apiLogin: String,
++    val apiKey: String
++)
++
++data class Transaction(
++    val order: Order,
++    val payer: Payer,
++    val creditCard: CreditCard?,
++    val type: String = "AUTHORIZATION_AND_CAPTURE",
++    val paymentMethod: String,
++    val paymentCountry: String = "PE",
++    val deviceSessionId: String,
++    val ipAddress: String,
++    val cookie: String,
++    val userAgent: String
++)
++
++data class Order(
++    val accountId: String,
++    val referenceCode: String,
++    val description: String,
++    val language: String = "es",
++    val signature: String,
++    val additionalValues: AdditionalValues,
++    val buyer: Buyer
++)
++
++data class AdditionalValues(
++    val TX_VALUE: TX_VALUE
++)
++
++data class TX_VALUE(
++    val value: Double,
++    val currency: String = "PEN"
++)
++
++data class Buyer(
++    val merchantBuyerId: String,
++    val fullName: String,
++    val emailAddress: String,
++    val contactPhone: String,
++    val dniNumber: String,
++    val shippingAddress: ShippingAddress
++)
++
++data class ShippingAddress(
++    val street1: String,
++    val street2: String,
++    val city: String,
++    val state: String,
++    val country: String,
++    val postalCode: String,
++    val phone: String
++)
++
++data class Payer(
++    val merchantPayerId: String,
++    val fullName: String,
++    val emailAddress: String,
++    val contactPhone: String,
++    val dniNumber: String,
++    val billingAddress: BillingAddress
++)
++
++data class BillingAddress(
++    val street1: String,
++    val street2: String,
++    val city: String,
++    val state: String,
++    val country: String,
++    val postalCode: String,
++    val phone: String
++)
++
++data class CreditCard(
++    val number: String,
++    val securityCode: String,
++    val expirationDate: String,
++    val name: String
++)
++
++data class PaymentResponse(
++    val code: String,
++    val transactionResponse: TransactionResponse
++)
++
++data class TransactionResponse(
++    val orderId: String,
++    val transactionId: String,
++    val state: String,
++    val paymentNetworkResponseCode: String,
++    val paymentNetworkResponseErrorMessage: String,
++    val trazabilityCode: String,
++    val authorizationCode: String,
++    val pendingReason: String,
++    val responseCode: String,
++    val errorCode: String,
++    val responseMessage: String,
++    val transactionDate: String,
++    val transactionTime: String,
++    val operationDate: String,
++    val referenceQuestionId: String,
++    val merchantName: String,
++    val merchantAddress: String
++)
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt
+new file mode 100644
+--- /dev/null	(date 1720071387116)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt	(date 1720071387116)
+@@ -0,0 +1,29 @@
++package com.redsystemstudio.appcomprayventa
++
++import android.content.Intent
++import android.os.Bundle
++import androidx.appcompat.app.AppCompatActivity
++import com.redsystemstudio.appcomprayventa.databinding.ActivityConfirmacionPagoBinding
++
++class ConfirmacionPagoActivity : AppCompatActivity() {
++
++    private lateinit var binding: ActivityConfirmacionPagoBinding
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        binding = ActivityConfirmacionPagoBinding.inflate(layoutInflater)
++        setContentView(binding.root)
++
++        val transactionId = intent.getStringExtra("TRANSACTION_ID")
++        val total = intent.getStringExtra("TOTAL")
++
++        binding.tvNumeroOrden.text = "Número de orden: $transactionId"
++        binding.tvTotal.text = "Total: $total"
++
++        binding.btnSeguirComprando.setOnClickListener {
++            val intent = Intent(this, MainActivity::class.java)
++            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
++            startActivity(intent)
++        }
++    }
++}
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa\r\n\r\nimport android.os.Bundle\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.CarritoAdapter\r\nimport com.redsystemstudio.appcomprayventa.Modelo.CarritoItem\r\nimport com.redsystemstudio.appcomprayventa.databinding.ActivityCarritoBinding\r\n\r\nclass Carrito : AppCompatActivity() {\r\n\r\n    private lateinit var binding: ActivityCarritoBinding\r\n    private lateinit var carritoManager: CarritoManager\r\n    private lateinit var adapter: CarritoAdapter\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        binding = ActivityCarritoBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n\r\n        carritoManager = CarritoManager(this)\r\n\r\n        binding.cartView.layoutManager = LinearLayoutManager(this)\r\n        val carritoItems = carritoManager.obtenerCarrito().toMutableList()\r\n        adapter = CarritoAdapter(carritoItems) { item ->\r\n            carritoManager.eliminarDelCarrito(item)\r\n            adapter.removeItem(item)\r\n            actualizarTotales()\r\n        }\r\n        binding.cartView.adapter = adapter\r\n\r\n        actualizarTotales()\r\n\r\n        binding.backBtn.setOnClickListener {\r\n            onBackPressedDispatcher.onBackPressed()\r\n        }\r\n\r\n        binding.checkoutBtn.setOnClickListener {\r\n            // Implementar lógica de pago aquí\r\n        }\r\n    }\r\n\r\n    private fun actualizarTotales() {\r\n        val subtotal = carritoManager.calcularSubtotal()\r\n        val impuestos = carritoManager.calcularTotalImpuestos(18.0) // Ejemplo de 18% de impuestos\r\n        val total = carritoManager.calcularTotal(18.0)\r\n\r\n        binding.totalFeeTxt.text = \"S/. %.2f\".format(subtotal)\r\n        binding.taxTxt.text = \"S/. %.2f\".format(impuestos)\r\n        binding.totalTxt.text = \"S/. %.2f\".format(total)\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt	(date 1720071387021)
+@@ -1,5 +1,6 @@
+ package com.redsystemstudio.appcomprayventa
+ 
++import android.content.Intent
+ import android.os.Bundle
+ import androidx.appcompat.app.AppCompatActivity
+ import androidx.recyclerview.widget.LinearLayoutManager
+@@ -36,7 +37,8 @@
+         }
+ 
+         binding.checkoutBtn.setOnClickListener {
+-            // Implementar lógica de pago aquí
++            val intent = Intent(this, PagoActivity::class.java)
++            startActivity(intent)
+         }
+     }
+ 
+Index: app/src/main/res/layout/activity_confirmacion_pago.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_confirmacion_pago.xml b/app/src/main/res/layout/activity_confirmacion_pago.xml
+new file mode 100644
+--- /dev/null	(date 1720071387080)
++++ b/app/src/main/res/layout/activity_confirmacion_pago.xml	(date 1720071387080)
+@@ -0,0 +1,56 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    tools:context=".ConfirmacionPagoActivity">
++
++    <TextView
++        android:id="@+id/tvGracias"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="¡Gracias!"
++        android:textSize="24sp"
++        app:layout_constraintTop_toTopOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <TextView
++        android:id="@+id/tvMensaje"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Hemos procesado tu pago exitosamente"
++        app:layout_constraintTop_toBottomOf="@+id/tvGracias"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <TextView
++        android:id="@+id/tvNumeroOrden"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Número de orden: ABC0123"
++        app:layout_constraintTop_toBottomOf="@+id/tvMensaje"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <TextView
++        android:id="@+id/tvTotal"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Total: S/ 120"
++        app:layout_constraintTop_toBottomOf="@+id/tvNumeroOrden"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <Button
++        android:id="@+id/btnSeguirComprando"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Seguir comprando"
++        app:layout_constraintTop_toBottomOf="@+id/tvTotal"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        android:backgroundTint="@color/design_default_color_primary"/>
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt
+new file mode 100644
+--- /dev/null	(date 1720071386998)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt	(date 1720071386998)
+@@ -0,0 +1,144 @@
++package com.redsystemstudio.appcomprayventa
++
++import AdditionalValues
++import BillingAddress
++import Buyer
++import Merchant
++import Order
++import PayUApiService
++import Payer
++import PaymentRequest
++import PaymentResponse
++import ShippingAddress
++import TX_VALUE
++import Transaction
++import android.content.Intent
++import android.os.Bundle
++
++import android.util.Log
++import android.view.View
++import androidx.appcompat.app.AppCompatActivity
++import com.redsystemstudio.appcomprayventa.databinding.ActivityPagoBinding
++import retrofit2.Call
++import retrofit2.Callback
++import retrofit2.Response
++
++class PagoActivity : AppCompatActivity() {
++
++    private lateinit var binding: ActivityPagoBinding
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        binding = ActivityPagoBinding.inflate(layoutInflater)
++        setContentView(binding.root)
++
++        binding.radioGroupMetodosPago.setOnCheckedChangeListener { _, checkedId ->
++            when (checkedId) {
++                R.id.rbYape -> binding.layoutYape.visibility = View.VISIBLE
++                else -> binding.layoutYape.visibility = View.GONE
++            }
++        }
++
++        binding.btnPagar.setOnClickListener {
++            if (binding.rbYape.isChecked) {
++                realizarPagoConYape()
++            } else {
++                // Manejar otros métodos de pago
++            }
++        }
++    }
++
++    private fun realizarPagoConYape() {
++        val apiService = RetrofitClient.instance.create(PayUApiService::class.java)
++
++        val merchant = Merchant(apiLogin = "nZo877xX0HZvwPI", apiKey = "UcQ6Bilo89CxD2pp281v2v7rS4")
++        val order = Order(
++            accountId = "1019543",
++            referenceCode = "ORDER1",
++            description = "compra de merketplace",
++            signature = "FIRMA_GENERADA",
++            additionalValues = AdditionalValues(TX_VALUE(value = 100.0)),
++            buyer = Buyer(
++                merchantBuyerId = "COMPRADOR_ID",
++                fullName = "Nombre del comprador",
++                emailAddress = "email@comprador.com",
++                contactPhone = "123456789",
++                dniNumber = "12345678",
++                shippingAddress = ShippingAddress(
++                    street1 = "Calle 123",
++                    street2 = "Apt 456",
++                    city = "Ciudad",
++                    state = "Estado",
++                    country = "PE",
++                    postalCode = "0000",
++                    phone = "123456789"
++                )
++            )
++        )
++
++        val transaction = Transaction(
++            order = order,
++            payer = Payer(
++                merchantPayerId = "PAYER_ID",
++                fullName = "Nombre del pagador",
++                emailAddress = "email@pagador.com",
++                contactPhone = "987654321",
++                dniNumber = "87654321",
++                billingAddress = BillingAddress(
++                    street1 = "Calle 456",
++                    street2 = "Apt 789",
++                    city = "Ciudad",
++                    state = "Estado",
++                    country = "PE",
++                    postalCode = "1111",
++                    phone = "987654321"
++                )
++            ),
++            creditCard = null, // No necesitas esta parte si usas Yape
++            paymentMethod = "YAPE",
++            deviceSessionId = "session12345",
++            ipAddress = "192.168.0.1",
++            cookie = "cookie123",
++            userAgent = "Mozilla/5.0"
++        )
++
++        val paymentRequest = PaymentRequest(
++            language = "es",
++            command = "SUBMIT_TRANSACTION",
++            merchant = merchant,
++            transaction = transaction
++        )
++
++        apiService.createPayment(paymentRequest).enqueue(object : Callback<PaymentResponse> {
++            override fun onResponse(call: retrofit2.Call<PaymentResponse>, response: Response<PaymentResponse>) {
++                if (response.isSuccessful) {
++                    val paymentResponse = response.body()
++                    // Manejar la respuesta del pago
++                    binding.resultadoPago.visibility = View.VISIBLE
++                    binding.resultadoPago.text = "Pago exitoso: ${paymentResponse?.transactionResponse?.transactionId}"
++                    mostrarConfirmacionPago(paymentResponse?.transactionResponse?.transactionId)
++                } else {
++                    // Manejar el error
++                    binding.resultadoPago.visibility = View.VISIBLE
++                    binding.resultadoPago.text = "Error en el pago: ${response.errorBody()?.string()}"
++                    Log.e("PagoActivity", "Error en el pago: ${response.errorBody()?.string()}")
++                }
++            }
++
++            override fun onFailure(call: retrofit2.Call<PaymentResponse>, t: Throwable) {
++                // Manejar la falla
++                binding.resultadoPago.visibility = View.VISIBLE
++                binding.resultadoPago.text = "Fallo en el pago: ${t.message}"
++                Log.e("PagoActivity", "Fallo en el pago: ${t.message}")
++            }
++        })
++    }
++
++    private fun mostrarConfirmacionPago(transactionId: String?) {
++        val intent = Intent(this, ConfirmacionPagoActivity::class.java).apply {
++            putExtra("TRANSACTION_ID", transactionId)
++            putExtra("TOTAL", "S/ 120") // Reemplazar con el total real
++        }
++        startActivity(intent)
++    }
++}
+Index: app/src/main/res/layout/activity_pago.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_pago.xml b/app/src/main/res/layout/activity_pago.xml
+new file mode 100644
+--- /dev/null	(date 1720071386983)
++++ b/app/src/main/res/layout/activity_pago.xml	(date 1720071386983)
+@@ -0,0 +1,81 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    tools:context=".PagoActivity">
++
++    <RadioGroup
++        android:id="@+id/radioGroupMetodosPago"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="16dp"
++        app:layout_constraintTop_toTopOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent">
++        <RadioButton
++            android:id="@+id/rbTarjeta"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Pago con tarjeta de debito/crédito"/>
++        <RadioButton
++            android:id="@+id/rbBancamovil"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Bancamovil y QR"/>
++        <RadioButton
++            android:id="@+id/rbYape"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Pago con Yape en línea"/>
++    </RadioGroup>
++
++    <LinearLayout
++        android:id="@+id/layoutYape"
++        android:orientation="vertical"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="16dp"
++        android:padding="16dp"
++        android:visibility="gone"
++        app:layout_constraintTop_toBottomOf="@id/radioGroupMetodosPago"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent">
++        <EditText
++            android:id="@+id/etNumeroYape"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="Ingresa tu celular Yape"/>
++        <EditText
++            android:id="@+id/etCodigoYape"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="Código de aprobación"
++            android:inputType="number"/>
++    </LinearLayout>
++
++    <TextView
++        android:id="@+id/resultadoPago"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text=""
++        android:visibility="gone"
++        android:layout_marginTop="16dp"
++        app:layout_constraintTop_toBottomOf="@id/layoutYape"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <Button
++        android:id="@+id/btnPagar"
++        android:layout_width="0dp"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="16dp"
++        android:text="Pagar"
++        app:layout_constraintTop_toBottomOf="@id/resultadoPago"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintBottom_toBottomOf="parent"
++        android:backgroundTint="@color/design_default_color_primary"/>
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Filtro/FiltrarAnuncio.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa.Filtro\r\n\r\nimport android.widget.Filter\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio\r\nimport java.util.Locale\r\n\r\nclass FiltrarAnuncio (\r\n    private val adaptador : AdaptadorAnuncio,\r\n    private val filtroLista : ArrayList<ModeloAnuncio>\r\n) : Filter(){\r\n    override fun performFiltering(filtro : CharSequence?): FilterResults {\r\n        var filtro = filtro\r\n        val resultados = FilterResults()\r\n\r\n        if (!filtro.isNullOrEmpty()){\r\n            filtro = filtro.toString().uppercase(Locale.getDefault())\r\n            val filtroModelo = ArrayList<ModeloAnuncio>()\r\n            for (i in filtroLista.indices){\r\n                if (filtroLista[i].marca.uppercase(Locale.getDefault()).contains(filtro) ||\r\n                    filtroLista[i].categoria.uppercase(Locale.getDefault()).contains(filtro)||\r\n                    filtroLista[i].condicion.uppercase(Locale.getDefault()).contains(filtro) ||\r\n                    filtroLista[i].titulo.uppercase(Locale.getDefault()).contains(filtro)){\r\n                    filtroModelo.add(filtroLista[i])\r\n                }\r\n            }\r\n            resultados.count = filtroModelo.size\r\n            resultados.values = filtroModelo\r\n        }else{\r\n            resultados.count = filtroLista.size\r\n            resultados.values = filtroLista\r\n        }\r\n        return resultados\r\n    }\r\n\r\n    override fun publishResults(filtro: CharSequence?, resultados: FilterResults) {\r\n        adaptador.anuncioArrayList = resultados.values as ArrayList<ModeloAnuncio>\r\n        adaptador.notifyDataSetChanged()\r\n    }\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Filtro/FiltrarAnuncio.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Filtro/FiltrarAnuncio.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/Filtro/FiltrarAnuncio.kt	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Filtro/FiltrarAnuncio.kt	(date 1720071387033)
+@@ -5,28 +5,24 @@
+ import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
+ import java.util.Locale
+ 
+-class FiltrarAnuncio (
+-    private val adaptador : AdaptadorAnuncio,
+-    private val filtroLista : ArrayList<ModeloAnuncio>
+-) : Filter(){
+-    override fun performFiltering(filtro : CharSequence?): FilterResults {
+-        var filtro = filtro
++class FiltrarAnuncio(
++    private val adaptador: AdaptadorAnuncio,
++    private val filtroLista: ArrayList<ModeloAnuncio>
++) : Filter() {
++    override fun performFiltering(filtro: CharSequence?): FilterResults {
+         val resultados = FilterResults()
+ 
+-        if (!filtro.isNullOrEmpty()){
+-            filtro = filtro.toString().uppercase(Locale.getDefault())
+-            val filtroModelo = ArrayList<ModeloAnuncio>()
+-            for (i in filtroLista.indices){
+-                if (filtroLista[i].marca.uppercase(Locale.getDefault()).contains(filtro) ||
+-                    filtroLista[i].categoria.uppercase(Locale.getDefault()).contains(filtro)||
+-                    filtroLista[i].condicion.uppercase(Locale.getDefault()).contains(filtro) ||
+-                    filtroLista[i].titulo.uppercase(Locale.getDefault()).contains(filtro)){
+-                    filtroModelo.add(filtroLista[i])
+-                }
++        if (!filtro.isNullOrEmpty()) {
++            val filtroMayuscula = filtro.toString().uppercase(Locale.getDefault())
++            val filtroModelo = filtroLista.filter {
++                it.marca.uppercase(Locale.getDefault()).contains(filtroMayuscula) ||
++                        it.categoria.uppercase(Locale.getDefault()).contains(filtroMayuscula) ||
++                        it.condicion.uppercase(Locale.getDefault()).contains(filtroMayuscula) ||
++                        it.titulo.uppercase(Locale.getDefault()).contains(filtroMayuscula)
+             }
+             resultados.count = filtroModelo.size
+             resultados.values = filtroModelo
+-        }else{
++        } else {
+             resultados.count = filtroLista.size
+             resultados.values = filtroLista
+         }
+@@ -34,9 +30,8 @@
+     }
+ 
+     override fun publishResults(filtro: CharSequence?, resultados: FilterResults) {
++        @Suppress("UNCHECKED_CAST")
+         adaptador.anuncioArrayList = resultados.values as ArrayList<ModeloAnuncio>
+         adaptador.notifyDataSetChanged()
+     }
+-
+-
+-}
+\ No newline at end of file
++}
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt
+new file mode 100644
+--- /dev/null	(date 1720071386966)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt	(date 1720071386966)
+@@ -0,0 +1,13 @@
++import retrofit2.Retrofit
++import retrofit2.converter.gson.GsonConverterFactory
++
++object RetrofitClient {
++    private const val BASE_URL = "https://sandbox.api.payulatam.com/" // Asegúrate de usar la URL correcta
++
++    val instance: Retrofit by lazy {
++        Retrofit.Builder()
++            .baseUrl(BASE_URL)
++            .addConverterFactory(GsonConverterFactory.create())
++            .build()
++    }
++}
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt
+new file mode 100644
+--- /dev/null	(date 1720071386950)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt	(date 1720071386950)
+@@ -0,0 +1,12 @@
++
++
++
++import retrofit2.http.Body
++import retrofit2.http.Headers
++import retrofit2.http.POST
++
++interface PayUApiService {
++    @Headers("Content-Type: application/json")
++    @POST("payments-api/4.0/service.cgi")
++    fun createPayment(@Body paymentRequest: PaymentRequest): retrofit2.Call<PaymentResponse>
++}
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/DetalleAnuncio/DetalleAnuncio.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa.DetalleAnuncio\r\n\r\nimport android.Manifest\r\nimport android.app.Dialog\r\nimport android.content.Intent\r\nimport android.content.pm.PackageManager\r\nimport android.graphics.Color\r\nimport android.os.Bundle\r\nimport android.view.Menu\r\nimport android.view.View\r\nimport android.widget.PopupMenu\r\nimport android.widget.Toast\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport androidx.core.content.ContextCompat\r\nimport com.bumptech.glide.Glide\r\nimport com.google.android.material.button.MaterialButton\r\nimport com.google.android.material.dialog.MaterialAlertDialogBuilder\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.database.*\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorImgSlider\r\nimport com.redsystemstudio.appcomprayventa.Anuncios.CrearAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Carrito\r\nimport com.redsystemstudio.appcomprayventa.Constantes\r\nimport com.redsystemstudio.appcomprayventa.Modelo.CarritoItem\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio\r\nimport com.redsystemstudio.appcomprayventa.R\r\nimport com.redsystemstudio.appcomprayventa.databinding.ActivityDetalleAnuncioBinding\r\nimport com.redsystemstudio.appcomprayventa.CarritoManager\r\nimport com.redsystemstudio.appcomprayventa.Chat.ChatActivity\r\nimport com.redsystemstudio.appcomprayventa.DetalleVendedor.DetalleVendedor\r\nimport com.redsystemstudio.appcomprayventa.MainActivity\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloImgSlider\r\n\r\nclass DetalleAnuncio : AppCompatActivity() {\r\n\r\n    private lateinit var binding: ActivityDetalleAnuncioBinding\r\n    private lateinit var firebaseAuth: FirebaseAuth\r\n    private lateinit var carritoManager: CarritoManager\r\n    private var idAnuncio = \"\"\r\n\r\n    private var anuncioLatitud = 0.0\r\n    private var anuncioLongitud = 0.0\r\n\r\n    private var uidVendedor = \"\"\r\n    private var telVendedor = \"\"\r\n\r\n    private var favorito = false\r\n    private var carrito = false\r\n\r\n    private lateinit var imagenSliderArrayList: ArrayList<ModeloImgSlider>\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        binding = ActivityDetalleAnuncioBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n\r\n        carritoManager = CarritoManager(this)\r\n        firebaseAuth = FirebaseAuth.getInstance()\r\n\r\n        idAnuncio = intent.getStringExtra(\"idAnuncio\").toString()\r\n\r\n        Constantes.incrementarVistas(idAnuncio)\r\n\r\n        binding.IbRegresar.setOnClickListener {\r\n            onBackPressedDispatcher.onBackPressed()\r\n        }\r\n        comprobarAnuncioCar()\r\n        comprobarAnuncioFav()\r\n        cargarInfoAnuncio()\r\n        cargarImgAnuncio()\r\n\r\n        binding.IbEditar.setOnClickListener {\r\n            opcionesDialog()\r\n        }\r\n\r\n        binding.IbFav.setOnClickListener {\r\n            if (favorito) {\r\n                //true\r\n                Constantes.eliminarAnuncioFav(this, idAnuncio)\r\n            } else {\r\n                //false\r\n                Constantes.agregarAnuncioFav(this, idAnuncio)\r\n            }\r\n        }\r\n\r\n        binding.IbCarrito.setOnClickListener {\r\n            if (carrito) {\r\n                Constantes.eliminarAnuncioCar(this, idAnuncio)\r\n                carrito = false\r\n                actualizarBotonCarrito()\r\n            } else {\r\n                agregarAnuncioAlCarrito()\r\n                carrito = true\r\n                actualizarBotonCarrito()\r\n                val intent = Intent(this, Carrito::class.java)\r\n                startActivity(intent)\r\n            }\r\n        }\r\n\r\n        binding.IbEliminar.setOnClickListener {\r\n            val mAlertDialog = MaterialAlertDialogBuilder(this)\r\n            mAlertDialog.setTitle(\"Eliminar producto\")\r\n                .setMessage(\"¿Estás seguro de eliminar este producto?\")\r\n                .setPositiveButton(\"Eliminar\") { dialog, which ->\r\n                    eliminarAnuncio()\r\n                }\r\n                .setNegativeButton(\"Cancelar\") { dialog, which ->\r\n                    dialog.dismiss()\r\n                }.show()\r\n        }\r\n\r\n        binding.BtnMapa.setOnClickListener {\r\n            Constantes.mapaIntent(this, anuncioLatitud, anuncioLongitud)\r\n        }\r\n\r\n        binding.BtnLlamar.setOnClickListener {\r\n            if (ContextCompat.checkSelfPermission(applicationContext,\r\n                    Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {\r\n                val numTel = telVendedor\r\n                if (numTel.isEmpty()) {\r\n                    Toast.makeText(this@DetalleAnuncio,\r\n                        \"El vendedor no tiene número telefónico\",\r\n                        Toast.LENGTH_SHORT).show()\r\n                } else {\r\n                    Constantes.llamarIntent(this, numTel)\r\n                }\r\n            } else {\r\n                permisoLlamada.launch(Manifest.permission.CALL_PHONE)\r\n            }\r\n        }\r\n\r\n        binding.BtnSms.setOnClickListener {\r\n            if (ContextCompat.checkSelfPermission(applicationContext,\r\n                    Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {\r\n                val numTel = telVendedor\r\n                if (numTel.isEmpty()) {\r\n                    Toast.makeText(this@DetalleAnuncio,\r\n                        \"El vendedor no tiene un número telefónico\",\r\n                        Toast.LENGTH_SHORT).show()\r\n                } else {\r\n                    Constantes.smsIntent(this, numTel)\r\n                }\r\n            } else {\r\n                permisoSms.launch(Manifest.permission.SEND_SMS)\r\n            }\r\n        }\r\n\r\n        binding.BtnChat.setOnClickListener {\r\n            val intent = Intent(this, ChatActivity::class.java)\r\n            intent.putExtra(\"uidVendedor\", uidVendedor)\r\n            startActivity(intent)\r\n        }\r\n\r\n        binding.IvInfoVendedor.setOnClickListener {\r\n            val intent = Intent(this, DetalleVendedor::class.java)\r\n            intent.putExtra(\"uidVendedor\", uidVendedor)\r\n            Toast.makeText(this, \"El uid del vendedor es $uidVendedor\", Toast.LENGTH_SHORT).show()\r\n            startActivity(intent)\r\n        }\r\n    }\r\n\r\n    override fun onResume() {\r\n        super.onResume()\r\n        comprobarAnuncioCar()\r\n    }\r\n\r\n    private fun opcionesDialog() {\r\n        val popupMenu = PopupMenu(this, binding.IbEditar)\r\n\r\n        popupMenu.menu.add(Menu.NONE, 0, 0, \"Editar\")\r\n        popupMenu.menu.add(Menu.NONE, 1, 1, \"Marcar como vendido\")\r\n\r\n        popupMenu.show()\r\n\r\n        popupMenu.setOnMenuItemClickListener { item ->\r\n            val itemId = item.itemId\r\n\r\n            if (itemId == 0) {\r\n                //Editar\r\n                val intent = Intent(this, CrearAnuncio::class.java)\r\n                intent.putExtra(\"Edicion\", true)\r\n                intent.putExtra(\"idAnuncio\", idAnuncio)\r\n                startActivity(intent)\r\n            } else if (itemId == 1) {\r\n                //Marcar como vendido\r\n                dialogMarcarVendido()\r\n            }\r\n\r\n            return@setOnMenuItemClickListener true\r\n        }\r\n    }\r\n\r\n    private fun cargarInfoAnuncio() {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.child(idAnuncio)\r\n            .addValueEventListener(object : ValueEventListener {\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    try {\r\n                        val modeloAnuncio = snapshot.getValue(ModeloAnuncio::class.java)\r\n\r\n                        uidVendedor = modeloAnuncio!!.uid\r\n                        val titulo = modeloAnuncio.titulo\r\n                        val descripcion = modeloAnuncio.descripcion\r\n                        val direccion = modeloAnuncio.direccion\r\n                        val condicion = modeloAnuncio.condicion\r\n                        val categoria = modeloAnuncio.categoria\r\n                        val precio = modeloAnuncio.precio\r\n                        val estado = modeloAnuncio.estado\r\n                        val vista = modeloAnuncio.contadorVistas\r\n                        anuncioLatitud = modeloAnuncio.latitud\r\n                        anuncioLongitud = modeloAnuncio.longitud\r\n                        val tiempo = modeloAnuncio.tiempo\r\n\r\n                        val formatoFecha = Constantes.obtenerFecha(tiempo)\r\n\r\n                        if (uidVendedor == firebaseAuth.uid) {\r\n                            // Si el usuario que ha realizado la publicación, visualiza la información del anuncio\r\n\r\n                            // SI tendrá disponible\r\n                            binding.IbEditar.visibility = View.VISIBLE\r\n                            binding.IbEliminar.visibility = View.VISIBLE\r\n\r\n                            // No tendrá disponible\r\n                            binding.BtnMapa.visibility = View.GONE\r\n                            binding.BtnLlamar.visibility = View.GONE\r\n                            binding.BtnSms.visibility = View.GONE\r\n                            binding.BtnChat.visibility = View.GONE\r\n                            binding.IbCarrito.visibility = View.GONE\r\n\r\n                            binding.TxtDescrVendedor.visibility = View.GONE\r\n                            binding.perfilVendedor.visibility = View.GONE\r\n                        } else {\r\n                            // NO Tendrá disponible\r\n                            binding.IbEditar.visibility = View.GONE\r\n                            binding.IbEliminar.visibility = View.GONE\r\n\r\n                            // SI tendrá disponible\r\n                            binding.BtnMapa.visibility = View.VISIBLE\r\n                            binding.BtnLlamar.visibility = View.VISIBLE\r\n                            binding.BtnSms.visibility = View.VISIBLE\r\n                            binding.BtnChat.visibility = View.VISIBLE\r\n\r\n                            binding.TxtDescrVendedor.visibility = View.VISIBLE\r\n                            binding.perfilVendedor.visibility = View.VISIBLE\r\n\r\n                            // Verificar el estado del anuncio\r\n                            if (estado == \"Vendido\") {\r\n                                binding.IbCarrito.visibility = View.GONE\r\n                            } else {\r\n                                binding.IbCarrito.visibility = View.VISIBLE\r\n                            }\r\n                        }\r\n\r\n                        // Seteamos la información en las vistas\r\n                        binding.TvTitulo.text = titulo\r\n                        binding.TvDescr.text = descripcion\r\n                        binding.TvDireccion.text = direccion\r\n                        binding.TvCondicion.text = condicion\r\n                        binding.TvCat.text = categoria\r\n                        binding.TvPrecio.text = precio\r\n                        binding.TvEstado.text = estado\r\n                        binding.TvFecha.text = formatoFecha\r\n                        binding.TvVistas.text = vista.toString()\r\n\r\n                        if (estado == \"Disponible\") {\r\n                            binding.TvEstado.setTextColor(Color.BLUE)\r\n                        } else {\r\n                            binding.TvEstado.setTextColor(Color.RED)\r\n                        }\r\n\r\n                        // Información del vendedor\r\n                        cargarInfoVendedor()\r\n\r\n                    } catch (e: Exception) {\r\n\r\n                    }\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    // Handle the error\r\n                }\r\n            })\r\n    }\r\n\r\n\r\n\r\n    private fun marcarAnuncioVendido() {\r\n        val hashMap = HashMap<String, Any>()\r\n        hashMap[\"estado\"] = Constantes.anuncio_vendido\r\n\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.child(idAnuncio)\r\n            .updateChildren(hashMap)\r\n            .addOnSuccessListener {\r\n                Toast.makeText(this,\r\n                    \"El producto ha sido marcado como vendido\",\r\n                    Toast.LENGTH_SHORT)\r\n                    .show()\r\n            }\r\n            .addOnFailureListener { e ->\r\n                Toast.makeText(this,\r\n                    \"No se marcó como vendido\",\r\n                    Toast.LENGTH_SHORT)\r\n                    .show()\r\n            }\r\n    }\r\n\r\n    private fun dialogMarcarVendido() {\r\n        val btnSi: MaterialButton\r\n        val btnNo: MaterialButton\r\n        val dialog = Dialog(this)\r\n\r\n        dialog.setContentView(R.layout.cuadro_d_marcar_vendido)\r\n\r\n        btnSi = dialog.findViewById(R.id.Btn_si)\r\n        btnNo = dialog.findViewById(R.id.Btn_no)\r\n\r\n        btnSi.setOnClickListener {\r\n            marcarAnuncioVendido()\r\n            dialog.dismiss()\r\n        }\r\n        btnNo.setOnClickListener {\r\n            dialog.dismiss()\r\n        }\r\n\r\n        dialog.show()\r\n        dialog.setCanceledOnTouchOutside(false)\r\n    }\r\n\r\n    private fun cargarInfoVendedor() {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Usuarios\")\r\n        ref.child(uidVendedor)\r\n            .addValueEventListener(object : ValueEventListener {\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    val telefono = \"${snapshot.child(\"telefono\").value}\"\r\n                    val codTel = \"${snapshot.child(\"codigoTelefono\").value}\"\r\n                    val nombres = \"${snapshot.child(\"nombres\").value}\"\r\n                    val imagenPerfil = \"${snapshot.child(\"urlImagenPerfil\").value}\"\r\n                    val tiempoReg = snapshot.child(\"tiempo\").value as Long\r\n\r\n                    val forFecha = Constantes.obtenerFecha(tiempoReg)\r\n\r\n                    telVendedor = \"$codTel$telefono\"\r\n\r\n                    binding.TvNombres.text = nombres\r\n                    binding.TvMiembro.text = forFecha\r\n\r\n                    try {\r\n                        Glide.with(this@DetalleAnuncio)\r\n                            .load(imagenPerfil)\r\n                            .placeholder(R.drawable.img_perfil)\r\n                            .into(binding.ImgPerfil)\r\n                    } catch (e: Exception) {\r\n                    }\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    // Handle the error\r\n                }\r\n            })\r\n    }\r\n\r\n    private fun cargarImgAnuncio() {\r\n        imagenSliderArrayList = ArrayList()\r\n\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.child(idAnuncio).child(\"Imagenes\")\r\n            .addValueEventListener(object : ValueEventListener {\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    imagenSliderArrayList.clear()\r\n                    for (ds in snapshot.children) {\r\n                        try {\r\n                            val modeloImgSlider = ds.getValue(ModeloImgSlider::class.java)\r\n                            imagenSliderArrayList.add(modeloImgSlider!!)\r\n                        } catch (e: Exception) {\r\n                        }\r\n                    }\r\n\r\n                    val adaptadorImgSlider = AdaptadorImgSlider(this@DetalleAnuncio, imagenSliderArrayList)\r\n                    binding.imagenSliderVP.adapter = adaptadorImgSlider\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    // Handle the error\r\n                }\r\n            })\r\n    }\r\n\r\n    private fun comprobarAnuncioFav() {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Usuarios\")\r\n        ref.child(\"${firebaseAuth.uid}\").child(\"Favoritos\").child(idAnuncio)\r\n            .addValueEventListener(object : ValueEventListener {\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    favorito = snapshot.exists()\r\n\r\n                    if (favorito) {\r\n                        //Favorito = true\r\n                        binding.IbFav.setImageResource(R.drawable.ic_anuncio_es_favorito)\r\n                    } else {\r\n                        //Favorito = false\r\n                        binding.IbFav.setImageResource(R.drawable.ic_no_favorito)\r\n                    }\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    // Handle the error\r\n                }\r\n            })\r\n    }\r\n\r\n    private fun comprobarAnuncioCar() {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Usuarios\")\r\n        ref.child(\"${firebaseAuth.uid}\").child(\"Carrito\").child(idAnuncio)\r\n            .addValueEventListener(object : ValueEventListener {\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    carrito = snapshot.exists()\r\n                    actualizarBotonCarrito()\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    // Handle the error\r\n                }\r\n            })\r\n    }\r\n\r\n    private fun eliminarAnuncio() {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.child(idAnuncio)\r\n            .removeValue()\r\n            .addOnSuccessListener {\r\n                startActivity(Intent(this@DetalleAnuncio, MainActivity::class.java))\r\n                finishAffinity()\r\n                Toast.makeText(\r\n                    this,\r\n                    \"Se eliminó el producto con éxito\",\r\n                    Toast.LENGTH_SHORT\r\n                ).show()\r\n            }\r\n            .addOnFailureListener { e ->\r\n                Toast.makeText(\r\n                    this,\r\n                    \"${e.message}\",\r\n                    Toast.LENGTH_SHORT\r\n                ).show()\r\n            }\r\n    }\r\n\r\n    private val permisoLlamada =\r\n        registerForActivityResult(ActivityResultContracts.RequestPermission()) { conceder ->\r\n            if (conceder) {\r\n                //True\r\n                val numTel = telVendedor\r\n                if (numTel.isEmpty()) {\r\n                    Toast.makeText(this@DetalleAnuncio,\r\n                        \"El vendedor no tiene número telefónico\",\r\n                        Toast.LENGTH_SHORT).show()\r\n                } else {\r\n                    Constantes.llamarIntent(this, numTel)\r\n                }\r\n            } else {\r\n                Toast.makeText(this@DetalleAnuncio,\r\n                    \"El permiso de realizar llamadas telefónicas no está concedida, por favor habilítela en los ajustes del dispositivo\",\r\n                    Toast.LENGTH_SHORT).show()\r\n            }\r\n        }\r\n\r\n    private val permisoSms =\r\n        registerForActivityResult(ActivityResultContracts.RequestPermission()) { conceder ->\r\n            if (conceder) {\r\n                //true\r\n                val numTel = telVendedor\r\n                if (numTel.isEmpty()) {\r\n                    Toast.makeText(this@DetalleAnuncio,\r\n                        \"El vendedor no tiene un número telefónico\",\r\n                        Toast.LENGTH_SHORT).show()\r\n                } else {\r\n                    Constantes.smsIntent(this, numTel)\r\n                }\r\n            } else {\r\n                //false\r\n                Toast.makeText(this@DetalleAnuncio,\r\n                    \"El permiso de envío de mensajes SMS no está concedido, por favor habilítelo en los ajustes del teléfono\",\r\n                    Toast.LENGTH_SHORT).show()\r\n            }\r\n        }\r\n\r\n    private fun agregarAnuncioAlCarrito() {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\").child(idAnuncio)\r\n        ref.addListenerForSingleValueEvent(object : ValueEventListener {\r\n            override fun onDataChange(snapshot: DataSnapshot) {\r\n                val modeloAnuncio = snapshot.getValue(ModeloAnuncio::class.java)\r\n                if (modeloAnuncio != null) {\r\n                    val carritoItem = CarritoItem(\r\n                        id = modeloAnuncio.id,\r\n                        titulo = modeloAnuncio.titulo,\r\n                        precio = modeloAnuncio.precio.toDouble(),\r\n                        cantidad = 1\r\n                    )\r\n                    carritoManager.agregarAlCarrito(carritoItem)\r\n                    Toast.makeText(this@DetalleAnuncio, \"Producto agregado al carrito\", Toast.LENGTH_SHORT).show()\r\n                }\r\n            }\r\n\r\n            override fun onCancelled(error: DatabaseError) {\r\n                Toast.makeText(this@DetalleAnuncio, \"Error al agregar al carrito\", Toast.LENGTH_SHORT).show()\r\n            }\r\n        })\r\n    }\r\n\r\n    private fun actualizarBotonCarrito() {\r\n        if (carrito) {\r\n            binding.IbCarrito.setImageResource(R.drawable.no_carrito)\r\n        } else {\r\n            binding.IbCarrito.setImageResource(R.drawable.carrito_add)\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/DetalleAnuncio/DetalleAnuncio.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/DetalleAnuncio/DetalleAnuncio.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/DetalleAnuncio/DetalleAnuncio.kt	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/DetalleAnuncio/DetalleAnuncio.kt	(date 1720071387094)
+@@ -21,12 +21,12 @@
+ import com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorImgSlider
+ import com.redsystemstudio.appcomprayventa.Anuncios.CrearAnuncio
+ import com.redsystemstudio.appcomprayventa.Carrito
++import com.redsystemstudio.appcomprayventa.CarritoManager
+ import com.redsystemstudio.appcomprayventa.Constantes
+ import com.redsystemstudio.appcomprayventa.Modelo.CarritoItem
+ import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
+ import com.redsystemstudio.appcomprayventa.R
+ import com.redsystemstudio.appcomprayventa.databinding.ActivityDetalleAnuncioBinding
+-import com.redsystemstudio.appcomprayventa.CarritoManager
+ import com.redsystemstudio.appcomprayventa.Chat.ChatActivity
+ import com.redsystemstudio.appcomprayventa.DetalleVendedor.DetalleVendedor
+ import com.redsystemstudio.appcomprayventa.MainActivity
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature\r\n        android:name=\"android.hardware.camera\"\r\n        android:required=\"false\" />\r\n    <uses-feature\r\n        android:name=\"android.hardware.telephony\"\r\n        android:required=\"false\" />\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n    <uses-permission android:name=\"android.permission.CAMERA\" />\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\r\n    <uses-permission android:name=\"android.permission.CALL_PHONE\" />\r\n    <uses-permission android:name=\"android.permission.SEND_SMS\" />\r\n    <uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\" />\r\n\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_market\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_market_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.AppCompraYVenta\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".CarritoManager\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Carrito\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Eliminar_cuenta\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Chat.ChatActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".CambiarPassword\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".RecuperarPassword\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Comentarios\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".DetalleVendedor.DetalleVendedor\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".DetalleAnuncio.DetalleAnuncio\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".SeleccionarUbicacion\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Anuncios.CrearAnuncio\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".EditarPerfil\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Registro_email\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Opciones_login.Login_email\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".OpcionesLogin\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n                <action android:name=\"com.google.firebase.INSTANCE_ID_EVENT\"/>\r\n                <action android:name=\"com.google.firebase.MESSAGING_EVENT\"/>\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.DEFAULT\" />\r\n            </intent-filter>\r\n        </activity>\r\n\r\n        <meta-data\r\n            android:name=\"com.google.android.geo.API_KEY\"\r\n            android:value=\"@string/mi_google_maps_api_key\" />\r\n\r\n        <service\r\n            android:name=\".Notificaciones.MyFcmService\"\r\n            android:exported=\"false\">\r\n            <intent-filter>\r\n                <action android:name=\"com.google.firebase.MESSAGING_EVENT\" />\r\n            </intent-filter>\r\n        </service>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/AndroidManifest.xml	(date 1720071387130)
+@@ -30,6 +30,15 @@
+         android:theme="@style/Theme.AppCompraYVenta"
+         tools:targetApi="31">
+         <activity
++            android:name=".ConfirmacionPagoActivity"
++            android:exported="false" />
++        <activity
++            android:name=".RetrofitClient"
++            android:exported="false" />
++        <activity
++            android:name=".PagoActivity"
++            android:exported="false" />
++        <activity
+             android:name=".CarritoManager"
+             android:exported="false" />
+         <activity
+Index: app/src/main/res/layout/fragment_inicio.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.appcompat.widget.LinearLayoutCompat\r\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    android:orientation=\"vertical\"\r\n    tools:context=\".Fragmentos.FragmentInicio\">\r\n\r\n    <!--Seleccionar una ubicación-->\r\n    <com.google.android.material.card.MaterialCardView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        app:cardCornerRadius=\"5dp\"\r\n        app:cardUseCompatPadding=\"true\"\r\n        app:contentPadding=\"10dp\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/Tv_locacion\"\r\n            android:text=\"@string/Tv_locacion\"\r\n            android:textStyle=\"bold\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            app:drawableStartCompat=\"@drawable/ic_locacion\"\r\n            android:drawablePadding=\"10dp\"\r\n            app:drawableEndCompat=\"@drawable/ic_siguiente\"/>\r\n\r\n    </com.google.android.material.card.MaterialCardView>\r\n\r\n\r\n\r\n    <androidx.appcompat.widget.LinearLayoutCompat\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:weightSum=\"5\">\r\n\r\n        <!--Buscar un anuncio-->\r\n        <com.google.android.material.card.MaterialCardView\r\n            android:layout_width=\"200dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            app:cardCornerRadius=\"5dp\"\r\n            app:cardUseCompatPadding=\"true\"\r\n            android:layout_weight=\"4\"\r\n            app:contentPadding=\"10dp\">\r\n\r\n            <EditText\r\n                android:id=\"@+id/Et_buscar\"\r\n                android:hint=\"@string/Et_buscar\"\r\n                android:background=\"@drawable/background_edittext\"\r\n                app:drawableStartCompat=\"@drawable/ic_buscar\"\r\n                android:drawablePadding=\"10dp\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"wrap_content\"\r\n                android:padding=\"10dp\"/>\r\n\r\n\r\n        </com.google.android.material.card.MaterialCardView>\r\n        <ImageButton\r\n            android:id=\"@+id/Ib_carrito\"\r\n            android:src=\"@drawable/carrito\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:layout_weight=\"1\"\r\n            android:layout_gravity=\"center\"\r\n            android:padding=\"10dp\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"/>\r\n\r\n        <ImageButton\r\n            android:id=\"@+id/Ib_limpiar\"\r\n            android:src=\"@drawable/ic_limpiar_busqueda\"\r\n            android:background=\"@android:color/transparent\"\r\n            android:layout_weight=\"1\"\r\n            android:layout_gravity=\"center\"\r\n            android:padding=\"10dp\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"/>\r\n\r\n    </androidx.appcompat.widget.LinearLayoutCompat>\r\n\r\n    <TextView\r\n        android:text=\"@string/Txt_categoria\"\r\n        style=\"@style/TextAppearance.MaterialComponents.Overline\"\r\n        android:textStyle=\"bold\"\r\n        android:layout_marginStart=\"8dp\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"/>\r\n\r\n    <!--Lista de categorias-->\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:id=\"@+id/categoriaRv\"\r\n        tools:listitem=\"@layout/item_categoria_inicio\"\r\n        app:layoutManager=\"androidx.recyclerview.widget.LinearLayoutManager\"\r\n        android:layout_marginTop=\"5dp\"\r\n        android:orientation=\"horizontal\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"/>\r\n\r\n    <TextView\r\n        android:text=\"@string/Txt_productos\"\r\n        style=\"@style/TextAppearance.MaterialComponents.Overline\"\r\n        android:textStyle=\"bold\"\r\n        android:layout_marginStart=\"8dp\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"/>\r\n    <!--Lista de anuncios-->\r\n    <androidx.recyclerview.widget.RecyclerView\r\n        android:id=\"@+id/anunciosRv\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        tools:listitem=\"@layout/item_anuncio_nueva_version\"\r\n        android:layout_marginTop=\"5dp\"\r\n        app:layoutManager=\"androidx.recyclerview.widget.GridLayoutManager\"\r\n        app:spanCount=\"2\"/>\r\n\r\n</androidx.appcompat.widget.LinearLayoutCompat>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/fragment_inicio.xml b/app/src/main/res/layout/fragment_inicio.xml
+--- a/app/src/main/res/layout/fragment_inicio.xml	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/res/layout/fragment_inicio.xml	(date 1720071387145)
+@@ -2,13 +2,13 @@
+ <androidx.appcompat.widget.LinearLayoutCompat
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+-    xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:orientation="vertical"
+     tools:context=".Fragmentos.FragmentInicio">
+ 
+-    <!--Seleccionar una ubicación-->
++    <!-- Seleccionar una ubicación -->
+     <com.google.android.material.card.MaterialCardView
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+@@ -25,17 +25,14 @@
+             app:drawableStartCompat="@drawable/ic_locacion"
+             android:drawablePadding="10dp"
+             app:drawableEndCompat="@drawable/ic_siguiente"/>
+-
+     </com.google.android.material.card.MaterialCardView>
+ 
+-
+-
+     <androidx.appcompat.widget.LinearLayoutCompat
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:weightSum="5">
+ 
+-        <!--Buscar un anuncio-->
++        <!-- Buscar un anuncio -->
+         <com.google.android.material.card.MaterialCardView
+             android:layout_width="200dp"
+             android:layout_height="wrap_content"
+@@ -53,9 +50,8 @@
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:padding="10dp"/>
+-
+-
+         </com.google.android.material.card.MaterialCardView>
++
+         <ImageButton
+             android:id="@+id/Ib_carrito"
+             android:src="@drawable/carrito"
+@@ -75,7 +71,6 @@
+             android:padding="10dp"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"/>
+-
+     </androidx.appcompat.widget.LinearLayoutCompat>
+ 
+     <TextView
+@@ -86,7 +81,7 @@
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"/>
+ 
+-    <!--Lista de categorias-->
++    <!-- Lista de categorías -->
+     <androidx.recyclerview.widget.RecyclerView
+         android:id="@+id/categoriaRv"
+         tools:listitem="@layout/item_categoria_inicio"
+@@ -103,7 +98,8 @@
+         android:layout_marginStart="8dp"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"/>
+-    <!--Lista de anuncios-->
++
++    <!-- Lista de anuncios -->
+     <androidx.recyclerview.widget.RecyclerView
+         android:id="@+id/anunciosRv"
+         android:layout_width="match_parent"
+@@ -112,5 +108,4 @@
+         android:layout_marginTop="5dp"
+         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+         app:spanCount="2"/>
+-
+-</androidx.appcompat.widget.LinearLayoutCompat>
+\ No newline at end of file
++</androidx.appcompat.widget.LinearLayoutCompat>
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Adaptadores/AdaptadorAnuncio.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa.Adaptadores\r\n\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.graphics.Color\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.Filter\r\nimport android.widget.Filterable\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport androidx.recyclerview.widget.RecyclerView.Adapter\r\nimport com.bumptech.glide.Glide\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.database.DataSnapshot\r\nimport com.google.firebase.database.DatabaseError\r\nimport com.google.firebase.database.FirebaseDatabase\r\nimport com.google.firebase.database.ValueEventListener\r\nimport com.redsystemstudio.appcomprayventa.Constantes\r\nimport com.redsystemstudio.appcomprayventa.DetalleAnuncio.DetalleAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Filtro.FiltrarAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio\r\nimport com.redsystemstudio.appcomprayventa.R\r\nimport com.redsystemstudio.appcomprayventa.databinding.ItemAnuncioBinding\r\nimport com.redsystemstudio.appcomprayventa.databinding.ItemAnuncioNuevaVersionBinding\r\n\r\nclass AdaptadorAnuncio : RecyclerView.Adapter<AdaptadorAnuncio.HolderAnuncio>, Filterable{\r\n\r\n    private lateinit var binding : ItemAnuncioNuevaVersionBinding\r\n\r\n    private var context : Context\r\n    var anuncioArrayList : ArrayList<ModeloAnuncio>\r\n    private var firebaeAuth : FirebaseAuth\r\n    private var filtroLista : ArrayList<ModeloAnuncio>\r\n    private var filtro : FiltrarAnuncio ?= null\r\n\r\n    constructor(context: Context, anuncioArrayList: ArrayList<ModeloAnuncio>) {\r\n        this.context = context\r\n        this.anuncioArrayList = anuncioArrayList\r\n        firebaeAuth = FirebaseAuth.getInstance()\r\n        this.filtroLista = anuncioArrayList\r\n    }\r\n\r\n\r\n    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderAnuncio {\r\n        binding = ItemAnuncioNuevaVersionBinding.inflate(LayoutInflater.from(context), parent, false)\r\n        return HolderAnuncio(binding.root)\r\n    }\r\n\r\n    override fun getItemCount(): Int {\r\n        return anuncioArrayList.size\r\n    }\r\n\r\n    override fun onBindViewHolder(holder: HolderAnuncio, position: Int) {\r\n        val modeloAnuncio = anuncioArrayList[position]\r\n\r\n        val titulo = modeloAnuncio.titulo\r\n        val descripcion = modeloAnuncio.descripcion\r\n        val direccion = modeloAnuncio.direccion\r\n        val condicion = modeloAnuncio.condicion\r\n        val precio = modeloAnuncio.precio\r\n        val tiempo = modeloAnuncio.tiempo\r\n\r\n        val formatoFecha = Constantes.obtenerFecha(tiempo)\r\n\r\n        cargarPrimeraImgAnuncio(modeloAnuncio,holder)\r\n\r\n        comprobarFavorito(modeloAnuncio, holder)\r\n\r\n        holder.Tv_titulo.text = titulo\r\n        holder.Tv_descripcion.text = descripcion\r\n        holder.Tv_direccion.text = direccion\r\n        holder.Tv_condicion.text = condicion\r\n        holder.Tv_precio.text = precio\r\n        holder.Tv_fecha.text = formatoFecha\r\n\r\n        holder.itemView.setOnClickListener {\r\n            val intent = Intent(context, DetalleAnuncio::class.java)\r\n            intent.putExtra(\"idAnuncio\", modeloAnuncio.id)\r\n            context.startActivity(intent)\r\n        }\r\n\r\n        if (condicion.equals(\"Nuevo\")){\r\n            holder.Tv_condicion.setTextColor(Color.parseColor(\"#48C9B0\"))\r\n        }else if (condicion.equals(\"Usado\")){\r\n            holder.Tv_condicion.setTextColor(Color.parseColor(\"#5DADE2\"))\r\n        }else if (condicion.equals(\"Renovado\")){\r\n            holder.Tv_condicion.setTextColor(Color.parseColor(\"#A569BD\"))\r\n        }\r\n\r\n\r\n        holder.Ib_fav.setOnClickListener {\r\n            val favorito = modeloAnuncio.favorito\r\n\r\n            if (favorito){\r\n                //Favorito = true\r\n                Constantes.eliminarAnuncioFav(context, modeloAnuncio.id)\r\n            }else{\r\n                //Favorito = false\r\n                Constantes.agregarAnuncioFav(context, modeloAnuncio.id)\r\n            }\r\n        }\r\n    }\r\n\r\n    private fun comprobarFavorito(modeloAnuncio: ModeloAnuncio, holder: AdaptadorAnuncio.HolderAnuncio) {\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Usuarios\")\r\n        ref.child(firebaeAuth.uid!!).child(\"Favoritos\").child(modeloAnuncio.id)\r\n            .addValueEventListener(object : ValueEventListener{\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    val favorito = snapshot.exists()\r\n                    modeloAnuncio.favorito = favorito\r\n\r\n                    if (favorito){\r\n                        holder.Ib_fav.setImageResource(R.drawable.ic_anuncio_es_favorito)\r\n                    }else{\r\n                        holder.Ib_fav.setImageResource(R.drawable.ic_no_favorito)\r\n                    }\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    TODO(\"Not yet implemented\")\r\n                }\r\n            })\r\n\r\n    }\r\n\r\n    private fun cargarPrimeraImgAnuncio(modeloAnuncio: ModeloAnuncio, holder: AdaptadorAnuncio.HolderAnuncio) {\r\n        val idAnuncio = modeloAnuncio.id\r\n\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.child(idAnuncio).child(\"Imagenes\").limitToFirst(1)\r\n            .addValueEventListener(object : ValueEventListener{\r\n                override fun onDataChange(snapshot: DataSnapshot) {\r\n                    for (ds in snapshot.children){\r\n                        val imagenUrl = \"${ds.child(\"imagenUrl\").value}\"\r\n                        try {\r\n                            Glide.with(context)\r\n                                .load(imagenUrl)\r\n                                .placeholder(R.drawable.ic_imagen)\r\n                                .into(holder.imagenIv)\r\n                        }catch (e:Exception){\r\n\r\n                        }\r\n                    }\r\n                }\r\n\r\n                override fun onCancelled(error: DatabaseError) {\r\n                    TODO(\"Not yet implemented\")\r\n                }\r\n            })\r\n    }\r\n\r\n    inner class HolderAnuncio(itemView : View) : RecyclerView.ViewHolder(itemView){\r\n        var imagenIv = binding.imagenIv\r\n        var Tv_titulo = binding.TvTitulo\r\n        var Tv_descripcion = binding.TvDescripcion\r\n        var Tv_direccion = binding.TvDireccion\r\n        var Tv_condicion = binding.TvCondicion\r\n        var Tv_precio = binding.TvPrecio\r\n        var Tv_fecha = binding.TvFecha\r\n        var Ib_fav = binding.IbFav\r\n    }\r\n\r\n    override fun getFilter(): Filter {\r\n        if (filtro == null){\r\n            filtro = FiltrarAnuncio(this, filtroLista)\r\n        }\r\n        return filtro as FiltrarAnuncio\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Adaptadores/AdaptadorAnuncio.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Adaptadores/AdaptadorAnuncio.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/Adaptadores/AdaptadorAnuncio.kt	(revision 1cf7d9a4a19ab780a0c9ed0ae9c6470e99396410)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Adaptadores/AdaptadorAnuncio.kt	(date 1720071387190)
+@@ -166,5 +166,5 @@
+             filtro = FiltrarAnuncio(this, filtroLista)
+         }
+         return filtro as FiltrarAnuncio
+-    }
++        }
+ }
+\ No newline at end of file

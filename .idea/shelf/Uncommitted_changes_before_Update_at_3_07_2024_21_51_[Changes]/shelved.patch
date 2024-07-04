@@ -1,0 +1,751 @@
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa.Fragmentos\r\n\r\nimport android.app.Activity\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.content.SharedPreferences\r\nimport android.location.Location\r\nimport android.location.LocationManager\r\nimport android.os.Bundle\r\nimport android.text.Editable\r\nimport android.text.TextWatcher\r\nimport androidx.fragment.app.Fragment\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.widget.Toast\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport com.google.firebase.database.DataSnapshot\r\nimport com.google.firebase.database.DatabaseError\r\nimport com.google.firebase.database.FirebaseDatabase\r\nimport com.google.firebase.database.ValueEventListener\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorCategoria\r\nimport com.redsystemstudio.appcomprayventa.Carrito\r\nimport com.redsystemstudio.appcomprayventa.Constantes\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio\r\nimport com.redsystemstudio.appcomprayventa.Modelo.ModeloCategoria\r\nimport com.redsystemstudio.appcomprayventa.R\r\nimport com.redsystemstudio.appcomprayventa.RvListenerCategoria\r\nimport com.redsystemstudio.appcomprayventa.SeleccionarUbicacion\r\nimport com.redsystemstudio.appcomprayventa.databinding.FragmentInicioBinding\r\n\r\n\r\nclass FragmentInicio : Fragment() {\r\n\r\n    private lateinit var binding : FragmentInicioBinding\r\n\r\n\r\n    private companion object{\r\n        private const val MAX_DISTANCIA_MOSTRAR_ANUNCIO = 10\r\n    }\r\n\r\n    private lateinit var mContext : Context\r\n\r\n    private lateinit var anuncioArrayList : ArrayList<ModeloAnuncio>\r\n    private lateinit var adaptadorAnuncio : AdaptadorAnuncio\r\n    private lateinit var locacionSP : SharedPreferences\r\n\r\n    private var actualLatitud = 0.0\r\n    private var actualLongitud = 0.0\r\n    private var actualDireccion = \"\"\r\n\r\n    override fun onAttach(context: Context) {\r\n        mContext = context\r\n        super.onAttach(context)\r\n    }\r\n\r\n    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {\r\n        // Inflate the layout for this fragment\r\n        binding = FragmentInicioBinding.inflate(LayoutInflater.from(mContext),container,false)\r\n        return binding.root\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        locacionSP = mContext.getSharedPreferences(\"LOCACION_SP\", Context.MODE_PRIVATE)\r\n\r\n        actualLatitud = locacionSP.getFloat(\"ACTUAL_LATITUD\", 0.0f).toDouble()\r\n        actualLongitud = locacionSP.getFloat(\"ACTUAL_LONGITUD\", 0.0f).toDouble()\r\n        actualDireccion = locacionSP.getString(\"ACTUAL_DIRECCION\", \"\")!!\r\n\r\n        if (actualLatitud != 0.0 && actualLongitud !=0.0){\r\n            binding.TvLocacion.text = actualDireccion\r\n        }\r\n\r\n        cargarCategorias()\r\n        cargarAnuncios(\"Todos\")\r\n\r\n        binding.TvLocacion.setOnClickListener {\r\n            val intent = Intent(mContext, SeleccionarUbicacion::class.java)\r\n            seleccionarUbicacionARL.launch(intent)\r\n        }\r\n\r\n        binding.EtBuscar.addTextChangedListener(object : TextWatcher{\r\n            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {\r\n\r\n            }\r\n\r\n            override fun onTextChanged(filtro: CharSequence?, p1: Int, p2: Int, p3: Int) {\r\n                try {\r\n                    val consulta = filtro.toString()\r\n                    adaptadorAnuncio.filter.filter(consulta)\r\n                }catch (e:Exception){\r\n\r\n                }\r\n            }\r\n\r\n            override fun afterTextChanged(p0: Editable?) {\r\n\r\n            }\r\n        })\r\n\r\n        binding.IbLimpiar.setOnClickListener {\r\n            val consulta = binding.EtBuscar.text.toString().trim()\r\n            if (consulta.isNotEmpty()){\r\n                binding.EtBuscar.setText(\"\")\r\n                Toast.makeText(context,\"Se ha limpiado el campo de búsqueda\",Toast.LENGTH_SHORT).show()\r\n            }else{\r\n                Toast.makeText(context,\"No se ha ingresado una consulta\",Toast.LENGTH_SHORT).show()\r\n            }\r\n        }\r\n\r\n        binding.IbCarrito.setOnClickListener{\r\n            val intent = Intent(mContext, Carrito::class.java)\r\n            startActivity(intent)\r\n        }\r\n\r\n\r\n    }\r\n\r\n    private val seleccionarUbicacionARL = registerForActivityResult(\r\n        ActivityResultContracts.StartActivityForResult()){resultado->\r\n        if (resultado.resultCode == Activity.RESULT_OK){\r\n            val data = resultado.data\r\n            if (data!=null){\r\n                actualLatitud = data.getDoubleExtra(\"latitud\", 0.0)\r\n                actualLongitud = data.getDoubleExtra(\"longitud\",0.0)\r\n                actualDireccion = data.getStringExtra(\"direccion\").toString()\r\n\r\n                locacionSP.edit()\r\n                    .putFloat(\"ACTUAL_LATITUD\", actualLatitud.toFloat())\r\n                    .putFloat(\"ACTUAL_LONGITUD\", actualLongitud.toFloat())\r\n                    .putString(\"ACTUAL_DIRECCION\", actualDireccion)\r\n                    .apply()\r\n\r\n                binding.TvLocacion.text = actualDireccion\r\n\r\n                cargarAnuncios(\"Todos\")\r\n            }else{\r\n                Toast.makeText(\r\n                    context, \"Cancelado\",Toast.LENGTH_SHORT\r\n                ).show()\r\n            }\r\n        }\r\n    }\r\n\r\n    private fun cargarCategorias(){\r\n        val categoriaArrayList = ArrayList<ModeloCategoria>()\r\n        for (i in 0 until Constantes.categorias.size){\r\n            val modeloCategoria = ModeloCategoria(Constantes.categorias[i], Constantes.categoriasIcono[i])\r\n            categoriaArrayList.add(modeloCategoria)\r\n        }\r\n\r\n        val adaptadorCategoria = AdaptadorCategoria(\r\n            mContext,\r\n            categoriaArrayList,\r\n            object : RvListenerCategoria{\r\n                override fun onCategoriaClick(modeloCategoria: ModeloCategoria) {\r\n                    val categoriaSeleccionada = modeloCategoria.categoria\r\n                    cargarAnuncios(categoriaSeleccionada)\r\n                }\r\n            }\r\n        )\r\n\r\n        binding.categoriaRv.adapter = adaptadorCategoria\r\n    }\r\n\r\n    private fun cargarAnuncios(categoria : String){\r\n        anuncioArrayList = ArrayList()\r\n\r\n        val ref = FirebaseDatabase.getInstance().getReference(\"Anuncios\")\r\n        ref.addValueEventListener(object : ValueEventListener{\r\n            override fun onDataChange(snapshot: DataSnapshot) {\r\n                anuncioArrayList.clear()\r\n                for (ds in snapshot.children){\r\n                    try {\r\n                        val modeloAnuncio = ds.getValue(ModeloAnuncio::class.java)\r\n                        val distancia = calcularDistanciaKM(\r\n                            modeloAnuncio?.latitud ?: 0.0,\r\n                            modeloAnuncio?.longitud ?: 0.0\r\n                        )\r\n                        if (categoria == \"Todos\"){\r\n                            if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){\r\n                                anuncioArrayList.add(modeloAnuncio!!)\r\n                            }\r\n                        }else{\r\n                            if (modeloAnuncio!!.categoria.equals(categoria)){\r\n                                if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){\r\n                                    anuncioArrayList.add(modeloAnuncio)\r\n                                }\r\n                            }\r\n                        }\r\n                    }catch (e:Exception){\r\n\r\n                    }\r\n                }\r\n                adaptadorAnuncio = AdaptadorAnuncio(mContext, anuncioArrayList)\r\n                binding.anunciosRv.adapter = adaptadorAnuncio\r\n\r\n            }\r\n\r\n            override fun onCancelled(error: DatabaseError) {\r\n                TODO(\"Not yet implemented\")\r\n            }\r\n        })\r\n    }\r\n\r\n    private fun calcularDistanciaKM(latitud : Double , longitud : Double) : Double{\r\n        val puntoPartida = Location(LocationManager.NETWORK_PROVIDER)\r\n        puntoPartida.latitude = actualLatitud\r\n        puntoPartida.longitude = actualLongitud\r\n\r\n        val puntoFinal = Location(LocationManager.NETWORK_PROVIDER)\r\n        puntoFinal.latitude = latitud\r\n        puntoFinal.longitude = longitud\r\n\r\n        val distanciaMetros = puntoPartida.distanceTo(puntoFinal).toDouble()\r\n        return distanciaMetros/1000\r\n    }\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt	(revision 6279f948aef15a7791adf57d205618fdc3ba18a5)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Fragmentos/FragmentInicio.kt	(date 1720060326651)
+@@ -166,42 +166,42 @@
+         binding.categoriaRv.adapter = adaptadorCategoria
+     }
+ 
+-    private fun cargarAnuncios(categoria : String){
++    private fun cargarAnuncios(categoria: String) {
+         anuncioArrayList = ArrayList()
+ 
+         val ref = FirebaseDatabase.getInstance().getReference("Anuncios")
+-        ref.addValueEventListener(object : ValueEventListener{
++        ref.addValueEventListener(object : ValueEventListener {
+             override fun onDataChange(snapshot: DataSnapshot) {
+                 anuncioArrayList.clear()
+-                for (ds in snapshot.children){
++                for (ds in snapshot.children) {
+                     try {
+                         val modeloAnuncio = ds.getValue(ModeloAnuncio::class.java)
+                         val distancia = calcularDistanciaKM(
+                             modeloAnuncio?.latitud ?: 0.0,
+                             modeloAnuncio?.longitud ?: 0.0
+                         )
+-                        if (categoria == "Todos"){
+-                            if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){
+-                                anuncioArrayList.add(modeloAnuncio!!)
++                        if (categoria == "Todos") {
++                            if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO) {
++                                modeloAnuncio?.let { anuncioArrayList.add(it) }
+                             }
+-                        }else{
+-                            if (modeloAnuncio!!.categoria.equals(categoria)){
+-                                if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){
++                        } else {
++                            if (modeloAnuncio!!.categoria == categoria) {
++                                if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO) {
+                                     anuncioArrayList.add(modeloAnuncio)
+                                 }
+                             }
+                         }
+-                    }catch (e:Exception){
+-
++                    } catch (e: Exception) {
++                        e.printStackTrace()
+                     }
+                 }
+                 adaptadorAnuncio = AdaptadorAnuncio(mContext, anuncioArrayList)
+                 binding.anunciosRv.adapter = adaptadorAnuncio
+-
+             }
+ 
+             override fun onCancelled(error: DatabaseError) {
+-                TODO("Not yet implemented")
++                // Manejar errores
++                Toast.makeText(mContext, "Error al cargar anuncios: ${error.message}", Toast.LENGTH_SHORT).show()
+             }
+         })
+     }
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt
+new file mode 100644
+--- /dev/null	(date 1720061400502)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/PagoActivity.kt	(date 1720061400502)
+@@ -0,0 +1,143 @@
++package com.redsystemstudio.appcomprayventa
++
++import AdditionalValues
++import BillingAddress
++import Buyer
++import Merchant
++import Order
++import PayUApiService
++import Payer
++import PaymentRequest
++import PaymentResponse
++import ShippingAddress
++import TX_VALUE
++import Transaction
++import android.content.Intent
++import android.os.Bundle
++import android.util.Log
++import android.view.View
++import androidx.appcompat.app.AppCompatActivity
++import com.redsystemstudio.appcomprayventa.databinding.ActivityPagoBinding
++import retrofit2.Call
++import retrofit2.Callback
++import retrofit2.Response
++
++class PagoActivity : AppCompatActivity() {
++
++    private lateinit var binding: ActivityPagoBinding
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        binding = ActivityPagoBinding.inflate(layoutInflater)
++        setContentView(binding.root)
++
++        binding.radioGroupMetodosPago.setOnCheckedChangeListener { _, checkedId ->
++            when (checkedId) {
++                R.id.rbYape -> binding.layoutYape.visibility = View.VISIBLE
++                else -> binding.layoutYape.visibility = View.GONE
++            }
++        }
++
++        binding.btnPagar.setOnClickListener {
++            if (binding.rbYape.isChecked) {
++                realizarPagoConYape()
++            } else {
++                // Manejar otros métodos de pago
++            }
++        }
++    }
++
++    private fun realizarPagoConYape() {
++        val apiService = RetrofitClient.instance.create(PayUApiService::class.java)
++
++        val merchant = Merchant(apiLogin = "nZo877xX0HZvwPI", apiKey = "UcQ6Bilo89CxD2pp281v2v7rS4")
++        val order = Order(
++            accountId = "1019543",
++            referenceCode = "ORDER1",
++            description = "compra de merketplace",
++            signature = "FIRMA_GENERADA",
++            additionalValues = AdditionalValues(TX_VALUE(value = 100.0)),
++            buyer = Buyer(
++                merchantBuyerId = "COMPRADOR_ID",
++                fullName = "Nombre del comprador",
++                emailAddress = "email@comprador.com",
++                contactPhone = "123456789",
++                dniNumber = "12345678",
++                shippingAddress = ShippingAddress(
++                    street1 = "Calle 123",
++                    street2 = "Apt 456",
++                    city = "Ciudad",
++                    state = "Estado",
++                    country = "PE",
++                    postalCode = "0000",
++                    phone = "123456789"
++                )
++            )
++        )
++
++        val transaction = Transaction(
++            order = order,
++            payer = Payer(
++                merchantPayerId = "PAYER_ID",
++                fullName = "Nombre del pagador",
++                emailAddress = "email@pagador.com",
++                contactPhone = "987654321",
++                dniNumber = "87654321",
++                billingAddress = BillingAddress(
++                    street1 = "Calle 456",
++                    street2 = "Apt 789",
++                    city = "Ciudad",
++                    state = "Estado",
++                    country = "PE",
++                    postalCode = "1111",
++                    phone = "987654321"
++                )
++            ),
++            creditCard = null, // No necesitas esta parte si usas Yape
++            paymentMethod = "YAPE",
++            deviceSessionId = "session12345",
++            ipAddress = "192.168.0.1",
++            cookie = "cookie123",
++            userAgent = "Mozilla/5.0"
++        )
++
++        val paymentRequest = PaymentRequest(
++            language = "es",
++            command = "SUBMIT_TRANSACTION",
++            merchant = merchant,
++            transaction = transaction
++        )
++
++        apiService.createPayment(paymentRequest).enqueue(object : Callback<PaymentResponse> {
++            override fun onResponse(call: Call<PaymentResponse>, response: Response<PaymentResponse>) {
++                if (response.isSuccessful) {
++                    val paymentResponse = response.body()
++                    // Manejar la respuesta del pago
++                    binding.resultadoPago.visibility = View.VISIBLE
++                    binding.resultadoPago.text = "Pago exitoso: ${paymentResponse?.transactionResponse?.transactionId}"
++                    mostrarConfirmacionPago(paymentResponse?.transactionResponse?.transactionId)
++                } else {
++                    // Manejar el error
++                    binding.resultadoPago.visibility = View.VISIBLE
++                    binding.resultadoPago.text = "Error en el pago: ${response.errorBody()?.string()}"
++                    Log.e("PagoActivity", "Error en el pago: ${response.errorBody()?.string()}")
++                }
++            }
++
++            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
++                // Manejar la falla
++                binding.resultadoPago.visibility = View.VISIBLE
++                binding.resultadoPago.text = "Fallo en el pago: ${t.message}"
++                Log.e("PagoActivity", "Fallo en el pago: ${t.message}")
++            }
++        })
++    }
++
++    private fun mostrarConfirmacionPago(transactionId: String?) {
++        val intent = Intent(this, ConfirmacionPagoActivity::class.java).apply {
++            putExtra("TRANSACTION_ID", transactionId)
++            putExtra("TOTAL", "S/ 120") // Reemplazar con el total real
++        }
++        startActivity(intent)
++    }
++}
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa\r\n\r\nimport android.os.Bundle\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport com.redsystemstudio.appcomprayventa.Adaptadores.CarritoAdapter\r\nimport com.redsystemstudio.appcomprayventa.Modelo.CarritoItem\r\nimport com.redsystemstudio.appcomprayventa.databinding.ActivityCarritoBinding\r\n\r\nclass Carrito : AppCompatActivity() {\r\n\r\n    private lateinit var binding: ActivityCarritoBinding\r\n    private lateinit var carritoManager: CarritoManager\r\n    private lateinit var adapter: CarritoAdapter\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        binding = ActivityCarritoBinding.inflate(layoutInflater)\r\n        setContentView(binding.root)\r\n\r\n        carritoManager = CarritoManager(this)\r\n\r\n        binding.cartView.layoutManager = LinearLayoutManager(this)\r\n        val carritoItems = carritoManager.obtenerCarrito().toMutableList()\r\n        adapter = CarritoAdapter(carritoItems) { item ->\r\n            carritoManager.eliminarDelCarrito(item)\r\n            adapter.removeItem(item)\r\n            actualizarTotales()\r\n        }\r\n        binding.cartView.adapter = adapter\r\n\r\n        actualizarTotales()\r\n\r\n        binding.backBtn.setOnClickListener {\r\n            onBackPressedDispatcher.onBackPressed()\r\n        }\r\n\r\n        binding.checkoutBtn.setOnClickListener {\r\n            // Implementar lógica de pago aquí\r\n        }\r\n    }\r\n\r\n    private fun actualizarTotales() {\r\n        val subtotal = carritoManager.calcularSubtotal()\r\n        val impuestos = carritoManager.calcularTotalImpuestos(18.0) // Ejemplo de 18% de impuestos\r\n        val total = carritoManager.calcularTotal(18.0)\r\n\r\n        binding.totalFeeTxt.text = \"S/. %.2f\".format(subtotal)\r\n        binding.taxTxt.text = \"S/. %.2f\".format(impuestos)\r\n        binding.totalTxt.text = \"S/. %.2f\".format(total)\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt	(revision 6279f948aef15a7791adf57d205618fdc3ba18a5)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Carrito.kt	(date 1720037571817)
+@@ -1,5 +1,6 @@
+ package com.redsystemstudio.appcomprayventa
+ 
++import android.content.Intent
+ import android.os.Bundle
+ import androidx.appcompat.app.AppCompatActivity
+ import androidx.recyclerview.widget.LinearLayoutManager
+@@ -36,7 +37,8 @@
+         }
+ 
+         binding.checkoutBtn.setOnClickListener {
+-            // Implementar lógica de pago aquí
++            val intent = Intent(this, PagoActivity::class.java)
++            startActivity(intent)
+         }
+     }
+ 
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt
+new file mode 100644
+--- /dev/null	(date 1720041308476)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/Modelo/PaymentRequest.kt	(date 1720041308476)
+@@ -0,0 +1,114 @@
++data class PaymentRequest(
++    val language: String,
++    val command: String,
++    val merchant: Merchant,
++    val transaction: Transaction,
++    val test: Boolean = true
++)
++
++data class Merchant(
++    val apiLogin: String,
++    val apiKey: String
++)
++
++data class Transaction(
++    val order: Order,
++    val payer: Payer,
++    val creditCard: CreditCard?,
++    val type: String = "AUTHORIZATION_AND_CAPTURE",
++    val paymentMethod: String,
++    val paymentCountry: String = "PE",
++    val deviceSessionId: String,
++    val ipAddress: String,
++    val cookie: String,
++    val userAgent: String
++)
++
++data class Order(
++    val accountId: String,
++    val referenceCode: String,
++    val description: String,
++    val language: String = "es",
++    val signature: String,
++    val additionalValues: AdditionalValues,
++    val buyer: Buyer
++)
++
++data class AdditionalValues(
++    val TX_VALUE: TX_VALUE
++)
++
++data class TX_VALUE(
++    val value: Double,
++    val currency: String = "PEN"
++)
++
++data class Buyer(
++    val merchantBuyerId: String,
++    val fullName: String,
++    val emailAddress: String,
++    val contactPhone: String,
++    val dniNumber: String,
++    val shippingAddress: ShippingAddress
++)
++
++data class ShippingAddress(
++    val street1: String,
++    val street2: String,
++    val city: String,
++    val state: String,
++    val country: String,
++    val postalCode: String,
++    val phone: String
++)
++
++data class Payer(
++    val merchantPayerId: String,
++    val fullName: String,
++    val emailAddress: String,
++    val contactPhone: String,
++    val dniNumber: String,
++    val billingAddress: BillingAddress
++)
++
++data class BillingAddress(
++    val street1: String,
++    val street2: String,
++    val city: String,
++    val state: String,
++    val country: String,
++    val postalCode: String,
++    val phone: String
++)
++
++data class CreditCard(
++    val number: String,
++    val securityCode: String,
++    val expirationDate: String,
++    val name: String
++)
++
++data class PaymentResponse(
++    val code: String,
++    val transactionResponse: TransactionResponse
++)
++
++data class TransactionResponse(
++    val orderId: String,
++    val transactionId: String,
++    val state: String,
++    val paymentNetworkResponseCode: String,
++    val paymentNetworkResponseErrorMessage: String,
++    val trazabilityCode: String,
++    val authorizationCode: String,
++    val pendingReason: String,
++    val responseCode: String,
++    val errorCode: String,
++    val responseMessage: String,
++    val transactionDate: String,
++    val transactionTime: String,
++    val operationDate: String,
++    val referenceQuestionId: String,
++    val merchantName: String,
++    val merchantAddress: String
++)
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt
+new file mode 100644
+--- /dev/null	(date 1720060874976)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/RetrofitClient.kt	(date 1720060874976)
+@@ -0,0 +1,13 @@
++import retrofit2.Retrofit
++import retrofit2.converter.gson.GsonConverterFactory
++
++object RetrofitClient {
++    private const val BASE_URL = "https://sandbox.api.payulatam.com/" // Asegúrate de usar la URL correcta
++
++    val instance: Retrofit by lazy {
++        Retrofit.Builder()
++            .baseUrl(BASE_URL)
++            .addConverterFactory(GsonConverterFactory.create())
++            .build()
++    }
++}
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt
+new file mode 100644
+--- /dev/null	(date 1720041217425)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/PayUApiService.kt	(date 1720041217425)
+@@ -0,0 +1,12 @@
++
++
++import retrofit2.Call
++import retrofit2.http.Body
++import retrofit2.http.Headers
++import retrofit2.http.POST
++
++interface PayUApiService {
++    @Headers("Content-Type: application/json")
++    @POST("payments-api/4.0/service.cgi")
++    fun createPayment(@Body paymentRequest: PaymentRequest): Call<PaymentResponse>
++}
+Index: app/src/main/res/layout/activity_retrofit_client.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_retrofit_client.xml b/app/src/main/res/layout/activity_retrofit_client.xml
+new file mode 100644
+--- /dev/null	(date 1720040917436)
++++ b/app/src/main/res/layout/activity_retrofit_client.xml	(date 1720040917436)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:id="@+id/main"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    tools:context=".RetrofitClient">
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.redsystemstudio.appcomprayventa\r\n\r\nimport android.content.Context\r\nimport com.google.gson.Gson\r\nimport com.redsystemstudio.appcomprayventa.Modelo.CarritoItem\r\n\r\nclass CarritoManager(private val context: Context) {\r\n\r\n    private val sharedPreferences = context.getSharedPreferences(\"CARRITO_PREF\", Context.MODE_PRIVATE)\r\n    private val gson = Gson()\r\n\r\n    fun agregarAlCarrito(item: CarritoItem) {\r\n        val carritoItems = obtenerCarrito().toMutableList()\r\n        carritoItems.add(item)\r\n        guardarCarrito(carritoItems)\r\n    }\r\n\r\n    fun eliminarDelCarrito(item: CarritoItem) {\r\n        val carritoItems = obtenerCarrito().toMutableList()\r\n        carritoItems.removeIf { it.id == item.id }\r\n        guardarCarrito(carritoItems)\r\n    }\r\n\r\n    fun obtenerCarrito(): List<CarritoItem> {\r\n        val carritoJson = sharedPreferences.getString(\"CARRITO\", \"[]\")\r\n        return gson.fromJson(carritoJson, Array<CarritoItem>::class.java).toList()\r\n    }\r\n\r\n    private fun guardarCarrito(carritoItems: List<CarritoItem>) {\r\n        val editor = sharedPreferences.edit()\r\n        val carritoJson = gson.toJson(carritoItems)\r\n        editor.putString(\"CARRITO\", carritoJson)\r\n        editor.apply()\r\n    }\r\n\r\n    fun calcularSubtotal(): Double {\r\n        val carritoItems = obtenerCarrito()\r\n        return carritoItems.sumByDouble { it.precio * it.cantidad }\r\n    }\r\n\r\n    fun calcularTotalImpuestos(impuestoPorcentaje: Double): Double {\r\n        val subtotal = calcularSubtotal()\r\n        return subtotal * (impuestoPorcentaje / 100)\r\n    }\r\n\r\n    fun calcularTotal(impuestoPorcentaje: Double): Double {\r\n        val subtotal = calcularSubtotal()\r\n        val impuestos = calcularTotalImpuestos(impuestoPorcentaje)\r\n        return subtotal + impuestos\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt
+--- a/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt	(revision 6279f948aef15a7791adf57d205618fdc3ba18a5)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/CarritoManager.kt	(date 1720054274224)
+@@ -3,12 +3,18 @@
+ import android.content.Context
+ import com.google.gson.Gson
+ import com.redsystemstudio.appcomprayventa.Modelo.CarritoItem
++import com.google.firebase.auth.FirebaseAuth
+ 
+ class CarritoManager(private val context: Context) {
+ 
+     private val sharedPreferences = context.getSharedPreferences("CARRITO_PREF", Context.MODE_PRIVATE)
+     private val gson = Gson()
+ 
++    private fun getUserId(): String {
++        val firebaseAuth = FirebaseAuth.getInstance()
++        return firebaseAuth.currentUser?.uid ?: ""
++    }
++
+     fun agregarAlCarrito(item: CarritoItem) {
+         val carritoItems = obtenerCarrito().toMutableList()
+         carritoItems.add(item)
+@@ -22,14 +28,14 @@
+     }
+ 
+     fun obtenerCarrito(): List<CarritoItem> {
+-        val carritoJson = sharedPreferences.getString("CARRITO", "[]")
++        val carritoJson = sharedPreferences.getString(getUserId(), "[]")
+         return gson.fromJson(carritoJson, Array<CarritoItem>::class.java).toList()
+     }
+ 
+     private fun guardarCarrito(carritoItems: List<CarritoItem>) {
+         val editor = sharedPreferences.edit()
+         val carritoJson = gson.toJson(carritoItems)
+-        editor.putString("CARRITO", carritoJson)
++        editor.putString(getUserId(), carritoJson)
+         editor.apply()
+     }
+ 
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature\r\n        android:name=\"android.hardware.camera\"\r\n        android:required=\"false\" />\r\n    <uses-feature\r\n        android:name=\"android.hardware.telephony\"\r\n        android:required=\"false\" />\r\n\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n    <uses-permission android:name=\"android.permission.CAMERA\" />\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\" />\r\n    <uses-permission android:name=\"android.permission.CALL_PHONE\" />\r\n    <uses-permission android:name=\"android.permission.SEND_SMS\" />\r\n    <uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_market\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_market_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.AppCompraYVenta\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".CarritoManager\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Carrito\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Eliminar_cuenta\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Chat.ChatActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".CambiarPassword\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".RecuperarPassword\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Comentarios\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".DetalleVendedor.DetalleVendedor\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".DetalleAnuncio.DetalleAnuncio\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".SeleccionarUbicacion\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Anuncios.CrearAnuncio\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".EditarPerfil\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Registro_email\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".Opciones_login.Login_email\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".OpcionesLogin\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.DEFAULT\" />\r\n            </intent-filter>\r\n        </activity>\r\n\r\n        <meta-data\r\n            android:name=\"com.google.android.geo.API_KEY\"\r\n            android:value=\"@string/mi_google_maps_api_key\" />\r\n\r\n        <service\r\n            android:name=\".Notificaciones.MyFcmService\"\r\n            android:exported=\"false\">\r\n            <intent-filter>\r\n                <action android:name=\"com.google.firebase.MESSAGING_EVENT\" />\r\n            </intent-filter>\r\n        </service>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 6279f948aef15a7791adf57d205618fdc3ba18a5)
++++ b/app/src/main/AndroidManifest.xml	(date 1720044633123)
+@@ -29,6 +29,15 @@
+         android:theme="@style/Theme.AppCompraYVenta"
+         tools:targetApi="31">
+         <activity
++            android:name=".ConfirmacionPagoActivity"
++            android:exported="false" />
++        <activity
++            android:name=".RetrofitClient"
++            android:exported="false" />
++        <activity
++            android:name=".PagoActivity"
++            android:exported="false" />
++        <activity
+             android:name=".CarritoManager"
+             android:exported="false" />
+         <activity
+Index: gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Project-wide Gradle settings.\r\n# IDE (e.g. Android Studio) users:\r\n# Gradle settings configured through the IDE *will override*\r\n# any settings specified in this file.\r\n# For more details on how to configure your build environment visit\r\n# http://www.gradle.org/docs/current/userguide/build_environment.html\r\n# Specifies the JVM arguments used for the daemon process.\r\n# The setting is particularly useful for tweaking memory settings.\r\norg.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\r\n# When configured, Gradle will run in incubating parallel mode.\r\n# This option should only be used with decoupled projects. More details, visit\r\n# http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects\r\n# org.gradle.parallel=true\r\n# AndroidX package structure to make it clearer which packages are bundled with the\r\n# Android operating system, and which are packaged with your app's APK\r\n# https://developer.android.com/topic/libraries/support-library/androidx-rn\r\nandroid.useAndroidX=true\r\n# Kotlin code style for this project: \"official\" or \"obsolete\":\r\nkotlin.code.style=official\r\n# Enables namespacing of each library's R class so that its R class includes only the\r\n# resources declared in the library itself and none from the library's dependencies,\r\n# thereby reducing the size of the R class for that library\r\nandroid.nonTransitiveRClass=true
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/gradle.properties b/gradle.properties
+--- a/gradle.properties	(revision 6279f948aef15a7791adf57d205618fdc3ba18a5)
++++ b/gradle.properties	(date 1720046464335)
+@@ -20,4 +20,5 @@
+ # Enables namespacing of each library's R class so that its R class includes only the
+ # resources declared in the library itself and none from the library's dependencies,
+ # thereby reducing the size of the R class for that library
+-android.nonTransitiveRClass=true
+\ No newline at end of file
++android.nonTransitiveRClass=true
++
+Index: app/src/main/res/layout/activity_pago.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_pago.xml b/app/src/main/res/layout/activity_pago.xml
+new file mode 100644
+--- /dev/null	(date 1720059054130)
++++ b/app/src/main/res/layout/activity_pago.xml	(date 1720059054130)
+@@ -0,0 +1,81 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    tools:context=".PagoActivity">
++
++    <RadioGroup
++        android:id="@+id/radioGroupMetodosPago"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="16dp"
++        app:layout_constraintTop_toTopOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent">
++        <RadioButton
++            android:id="@+id/rbTarjeta"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Pago con tarjeta de debito/crédito"/>
++        <RadioButton
++            android:id="@+id/rbBancamovil"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Bancamovil y QR"/>
++        <RadioButton
++            android:id="@+id/rbYape"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:text="Pago con Yape en línea"/>
++    </RadioGroup>
++
++    <LinearLayout
++        android:id="@+id/layoutYape"
++        android:orientation="vertical"
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="16dp"
++        android:padding="16dp"
++        android:visibility="gone"
++        app:layout_constraintTop_toBottomOf="@id/radioGroupMetodosPago"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent">
++        <EditText
++            android:id="@+id/etNumeroYape"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="Ingresa tu celular Yape"/>
++        <EditText
++            android:id="@+id/etCodigoYape"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="Código de aprobación"
++            android:inputType="number"/>
++    </LinearLayout>
++
++    <TextView
++        android:id="@+id/resultadoPago"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text=""
++        android:visibility="gone"
++        android:layout_marginTop="16dp"
++        app:layout_constraintTop_toBottomOf="@id/layoutYape"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <Button
++        android:id="@+id/btnPagar"
++        android:layout_width="0dp"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="16dp"
++        android:text="Pagar"
++        app:layout_constraintTop_toBottomOf="@id/resultadoPago"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintBottom_toBottomOf="parent"
++        android:backgroundTint="@color/design_default_color_primary"/>
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/src/main/res/layout/activity_confirmacion_pago.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_confirmacion_pago.xml b/app/src/main/res/layout/activity_confirmacion_pago.xml
+new file mode 100644
+--- /dev/null	(date 1720044919125)
++++ b/app/src/main/res/layout/activity_confirmacion_pago.xml	(date 1720044919125)
+@@ -0,0 +1,56 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent"
++    tools:context=".ConfirmacionPagoActivity">
++
++    <TextView
++        android:id="@+id/tvGracias"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="¡Gracias!"
++        android:textSize="24sp"
++        app:layout_constraintTop_toTopOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <TextView
++        android:id="@+id/tvMensaje"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Hemos procesado tu pago exitosamente"
++        app:layout_constraintTop_toBottomOf="@+id/tvGracias"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <TextView
++        android:id="@+id/tvNumeroOrden"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Número de orden: ABC0123"
++        app:layout_constraintTop_toBottomOf="@+id/tvMensaje"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <TextView
++        android:id="@+id/tvTotal"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Total: S/ 120"
++        app:layout_constraintTop_toBottomOf="@+id/tvNumeroOrden"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"/>
++
++    <Button
++        android:id="@+id/btnSeguirComprando"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="Seguir comprando"
++        app:layout_constraintTop_toBottomOf="@+id/tvTotal"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintEnd_toEndOf="parent"
++        android:backgroundTint="@color/design_default_color_primary"/>
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    id(\"com.android.application\")\r\n    id(\"org.jetbrains.kotlin.android\")\r\n    id(\"com.google.gms.google-services\")\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.redsystemstudio.appcomprayventa\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.redsystemstudio.appcomprayventa\"\r\n        minSdk = 24\r\n        targetSdk = 33\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n\r\n    buildFeatures{\r\n        viewBinding = true\r\n    }\r\n\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation(\"androidx.core:core-ktx:1.9.0\")\r\n    implementation(\"androidx.appcompat:appcompat:1.6.1\")\r\n    implementation(\"com.google.android.material:material:1.9.0\")\r\n    implementation(\"androidx.constraintlayout:constraintlayout:2.1.4\")\r\n    implementation(\"androidx.activity:activity:1.8.0\")\r\n    testImplementation(\"junit:junit:4.13.2\")\r\n    //implementation(\"com.google.firebase:firebase-analytics-ktx\")\r\n    implementation(platform(\"com.google.firebase:firebase-bom:32.3.1\"))\r\n    implementation(\"com.google.firebase:firebase-auth-ktx\")\r\n    implementation(\"com.google.firebase:firebase-database-ktx\")\r\n    implementation(\"com.google.firebase:firebase-storage-ktx\")\r\n    implementation (\"com.github.bumptech.glide:glide:4.16.0\")\r\n    implementation (\"com.google.android.gms:play-services-maps:18.1.0\")\r\n    implementation (\"com.google.android.libraries.places:places:3.1.0\")\r\n    implementation (\"com.hbb20:ccp:2.7.0\")\r\n    implementation (\"com.github.chrisbanes:PhotoView:2.3.0\")\r\n    implementation (\"com.google.firebase:firebase-messaging-ktx:23.3.1\")\r\n    implementation (\"de.hdodenhof:circleimageview:3.1.0\")\r\n    implementation (\"com.android.volley:volley:1.2.1\")\r\n    implementation (\"com.google.code.gson:gson:2.8.8\")\r\n\r\n    implementation(\"com.google.android.gms:play-services-auth:21.0.0\")\r\n    androidTestImplementation(\"androidx.test.ext:junit:1.1.5\")\r\n    androidTestImplementation(\"androidx.test.espresso:espresso-core:3.5.1\")\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 6279f948aef15a7791adf57d205618fdc3ba18a5)
++++ b/app/build.gradle.kts	(date 1720056536506)
+@@ -16,6 +16,7 @@
+         versionName = "1.0"
+ 
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
++
+     }
+ 
+     buildTypes {
+@@ -67,4 +68,9 @@
+     implementation("com.google.android.gms:play-services-auth:21.0.0")
+     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
++
++
++    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
++    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
++    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt b/app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt
+new file mode 100644
+--- /dev/null	(date 1720045024529)
++++ b/app/src/main/java/com/redsystemstudio/appcomprayventa/ConfirmacionPagoActivity.kt	(date 1720045024529)
+@@ -0,0 +1,29 @@
++package com.redsystemstudio.appcomprayventa
++
++import android.content.Intent
++import android.os.Bundle
++import androidx.appcompat.app.AppCompatActivity
++import com.redsystemstudio.appcomprayventa.databinding.ActivityConfirmacionPagoBinding
++
++class ConfirmacionPagoActivity : AppCompatActivity() {
++
++    private lateinit var binding: ActivityConfirmacionPagoBinding
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        binding = ActivityConfirmacionPagoBinding.inflate(layoutInflater)
++        setContentView(binding.root)
++
++        val transactionId = intent.getStringExtra("TRANSACTION_ID")
++        val total = intent.getStringExtra("TOTAL")
++
++        binding.tvNumeroOrden.text = "Número de orden: $transactionId"
++        binding.tvTotal.text = "Total: $total"
++
++        binding.btnSeguirComprando.setOnClickListener {
++            val intent = Intent(this, MainActivity::class.java)
++            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
++            startActivity(intent)
++        }
++    }
++}
