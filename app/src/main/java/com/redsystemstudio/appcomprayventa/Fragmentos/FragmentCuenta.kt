@@ -114,7 +114,7 @@ class FragmentCuenta : Fragment() {
                     ds.ref.removeValue()
                 }
 
-                Toast.makeText(mContext, "Se han eliminado todos sus anuncios",Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, "Se han eliminado todos sus productos",Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -223,8 +223,8 @@ class FragmentCuenta : Fragment() {
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    alertDialog.setTitle("Eliminar todos mis anuncios")
-                        .setMessage("¿Estás seguro(a) de eliminar todos tus anuncios?")
+                    alertDialog.setTitle("Eliminar todos mis productos")
+                        .setMessage("¿Estás seguro(a) de eliminar todos tus productos?")
                         .setPositiveButton("Eliminar"){dialog, which->
                             eliminarTodosMiAnuncios()
                         }
@@ -233,7 +233,7 @@ class FragmentCuenta : Fragment() {
                         }
                         .show()
                 } else {
-                    Toast.makeText(mContext, "No hay anuncios que eliminar", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(mContext, "No hay productos que eliminar", Toast.LENGTH_SHORT).show()
                 }
             }
 
