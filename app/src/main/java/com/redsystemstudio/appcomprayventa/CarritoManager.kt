@@ -3,11 +3,17 @@ package com.redsystemstudio.appcomprayventa
 import android.content.Context
 import com.google.gson.Gson
 import com.redsystemstudio.appcomprayventa.Modelo.CarritoItem
+import com.google.firebase.auth.FirebaseAuth
 
 class CarritoManager(private val context: Context) {
 
     private val sharedPreferences = context.getSharedPreferences("CARRITO_PREF", Context.MODE_PRIVATE)
     private val gson = Gson()
+
+    private fun getUserId(): String {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        return firebaseAuth.currentUser?.uid ?: ""
+    }
 
     fun agregarAlCarrito(item: CarritoItem) {
         val carritoItems = obtenerCarrito().toMutableList()
@@ -22,14 +28,14 @@ class CarritoManager(private val context: Context) {
     }
 
     fun obtenerCarrito(): List<CarritoItem> {
-        val carritoJson = sharedPreferences.getString("CARRITO", "[]")
+        val carritoJson = sharedPreferences.getString(getUserId(), "[]")
         return gson.fromJson(carritoJson, Array<CarritoItem>::class.java).toList()
     }
 
     private fun guardarCarrito(carritoItems: List<CarritoItem>) {
         val editor = sharedPreferences.edit()
         val carritoJson = gson.toJson(carritoItems)
-        editor.putString("CARRITO", carritoJson)
+        editor.putString(getUserId(), carritoJson)
         editor.apply()
     }
 

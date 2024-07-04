@@ -1,5 +1,6 @@
 package com.redsystemstudio.appcomprayventa
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,7 +37,8 @@ class Carrito : AppCompatActivity() {
         }
 
         binding.checkoutBtn.setOnClickListener {
-            // Implementar lógica de pago aquí
+            val intent = Intent(this, PagoActivity::class.java)
+            startActivity(intent)
         }
     }
 

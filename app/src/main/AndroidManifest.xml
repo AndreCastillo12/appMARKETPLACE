@@ -30,6 +30,15 @@
         android:theme="@style/Theme.AppCompraYVenta"
         tools:targetApi="31">
         <activity
+            android:name=".ConfirmacionPagoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RetrofitClient"
+            android:exported="false" />
+        <activity
+            android:name=".PagoActivity"
+            android:exported="false" />
+        <activity
             android:name=".CarritoManager"
             android:exported="false" />
         <activity

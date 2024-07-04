@@ -21,12 +21,12 @@ import com.google.firebase.database.*
 import com.redsystemstudio.appcomprayventa.Adaptadores.AdaptadorImgSlider
 import com.redsystemstudio.appcomprayventa.Anuncios.CrearAnuncio
 import com.redsystemstudio.appcomprayventa.Carrito
+import com.redsystemstudio.appcomprayventa.CarritoManager
 import com.redsystemstudio.appcomprayventa.Constantes
 import com.redsystemstudio.appcomprayventa.Modelo.CarritoItem
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
 import com.redsystemstudio.appcomprayventa.R
 import com.redsystemstudio.appcomprayventa.databinding.ActivityDetalleAnuncioBinding
-import com.redsystemstudio.appcomprayventa.CarritoManager
 import com.redsystemstudio.appcomprayventa.Chat.ChatActivity
 import com.redsystemstudio.appcomprayventa.DetalleVendedor.DetalleVendedor
 import com.redsystemstudio.appcomprayventa.MainActivity

@@ -25,11 +25,9 @@ import com.redsystemstudio.appcomprayventa.Carrito
 import com.redsystemstudio.appcomprayventa.Constantes
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloCategoria
-import com.redsystemstudio.appcomprayventa.R
 import com.redsystemstudio.appcomprayventa.RvListenerCategoria
 import com.redsystemstudio.appcomprayventa.SeleccionarUbicacion
 import com.redsystemstudio.appcomprayventa.databinding.FragmentInicioBinding
-
 
 class FragmentInicio : Fragment() {
 
@@ -217,7 +215,7 @@ class FragmentInicio : Fragment() {
 
         val distanciaMetros = puntoPartida.distanceTo(puntoFinal).toDouble()
         return distanciaMetros/1000
-    }
+        }
 
 
 }
