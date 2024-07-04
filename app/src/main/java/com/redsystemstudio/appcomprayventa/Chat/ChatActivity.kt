@@ -300,7 +300,7 @@ class ChatActivity : AppCompatActivity() {
             .addOnFailureListener {e->
                 Toast.makeText(
                     this,
-                    "No se pudo subir la imagen debido a ${e.message}",
+                    "No se pudo subir la imagen",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -338,7 +338,7 @@ class ChatActivity : AppCompatActivity() {
                 progressDialog.dismiss()
                 Toast.makeText(
                     this,
-                    "No se pudo enviar el mensaje debido a ${e.message}",
+                    "No se pudo enviar el mensaje",
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -232,7 +232,7 @@ class CrearAnuncio : AppCompatActivity() {
             }
             .addOnFailureListener {e->
                 progressDialog.dismiss()
-                Toast.makeText(this, "Falló la actualización debido a ${e.message}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Falló la actualización",Toast.LENGTH_SHORT).show()
             }
     }
 

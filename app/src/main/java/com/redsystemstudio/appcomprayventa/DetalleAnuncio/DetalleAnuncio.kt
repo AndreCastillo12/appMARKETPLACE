@@ -293,7 +293,7 @@ class DetalleAnuncio : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this,
-                    "No se marcó como vendido debido a ${e.message}",
+                    "No se marcó como vendido",
                     Toast.LENGTH_SHORT)
                     .show()
             }

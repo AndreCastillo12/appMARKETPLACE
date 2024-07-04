@@ -60,7 +60,7 @@ class RecuperarPassword : AppCompatActivity() {
             }
             .addOnFailureListener {e->
                 progressDialog.dismiss()
-                Toast.makeText(this, "No se enviaron las instrucciones debido a ${e.message}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No se enviaron las instrucciones",Toast.LENGTH_SHORT).show()
             }
 
 

@@ -121,7 +121,7 @@ class OpcionesLogin : AppCompatActivity() {
                 progressDialog.dismiss()
                 Toast.makeText(
                     this,
-                    "No se registró debido a ${e.message}",
+                    "No se registró",
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -86,7 +86,7 @@ class Registro_email : AppCompatActivity() {
                 progressDialog.dismiss()
                 Toast.makeText(
                     this,
-                    "No se registró el usuario debido a ${e.message}",
+                    "No se registró el usuario",
                     Toast.LENGTH_SHORT).show()
             }
     }
@@ -123,7 +123,7 @@ class Registro_email : AppCompatActivity() {
                 progressDialog.dismiss()
                 Toast.makeText(
                     this,
-                    "No se registró debido a ${e.message}",
+                    "No se registró",
                     Toast.LENGTH_SHORT
                 ).show()
             }

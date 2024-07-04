@@ -37,7 +37,6 @@ class FragmentMisAnuncios : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Mis anuncios"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Favoritos"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Compras"))
         val fragmentManager = childFragmentManager
 
         mTabsViewPagerAdapter = MyTabsViewPagerAdapter(fragmentManager, lifecycle)
@@ -75,7 +74,7 @@ class FragmentMisAnuncios : Fragment() {
         }
 
         override fun getItemCount(): Int {
-            return 3
+            return 2
         }
             }
 
