@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun verFragmentMisAnuncios(){
-        binding.TituloRl.text = "Anuncios"
+        binding.TituloRl.text = "Productos"
         val fragment = FragmentMisAnuncios()
         val fragmentTransition = supportFragmentManager.beginTransaction()
         fragmentTransition.replace(binding.FragmentL1.id, fragment, "FragmentMisAnuncios")
@@ -168,11 +168,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        actualizarEstado("online")
+        actualizarEstado("En línea")
     }
 
     override fun onPause() {
         super.onPause()
-        actualizarEstado("offline")
+        actualizarEstado("Desconectado")
     }
 }

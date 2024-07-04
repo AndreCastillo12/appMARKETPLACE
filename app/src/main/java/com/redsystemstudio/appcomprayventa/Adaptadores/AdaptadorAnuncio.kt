@@ -167,6 +167,4 @@ class AdaptadorAnuncio : RecyclerView.Adapter<AdaptadorAnuncio.HolderAnuncio>, F
         }
         return filtro as FiltrarAnuncio
     }
-
-
 }

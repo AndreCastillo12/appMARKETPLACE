@@ -100,8 +100,8 @@ class DetalleAnuncio : AppCompatActivity() {
 
         binding.IbEliminar.setOnClickListener {
             val mAlertDialog = MaterialAlertDialogBuilder(this)
-            mAlertDialog.setTitle("Eliminar anuncio")
-                .setMessage("¿Estás seguro de eliminar este anuncio?")
+            mAlertDialog.setTitle("Eliminar producto")
+                .setMessage("¿Estás seguro de eliminar este producto?")
                 .setPositiveButton("Eliminar") { dialog, which ->
                     eliminarAnuncio()
                 }
@@ -215,14 +215,13 @@ class DetalleAnuncio : AppCompatActivity() {
                         val formatoFecha = Constantes.obtenerFecha(tiempo)
 
                         if (uidVendedor == firebaseAuth.uid) {
-                            //Si el usuario que ha realizado la publicación, visualiza
-                            //la información del anuncio
+                            // Si el usuario que ha realizado la publicación, visualiza la información del anuncio
 
-                            //SI tendrá disponible
+                            // SI tendrá disponible
                             binding.IbEditar.visibility = View.VISIBLE
                             binding.IbEliminar.visibility = View.VISIBLE
 
-                            //No tendrá disponible
+                            // No tendrá disponible
                             binding.BtnMapa.visibility = View.GONE
                             binding.BtnLlamar.visibility = View.GONE
                             binding.BtnSms.visibility = View.GONE
@@ -232,22 +231,28 @@ class DetalleAnuncio : AppCompatActivity() {
                             binding.TxtDescrVendedor.visibility = View.GONE
                             binding.perfilVendedor.visibility = View.GONE
                         } else {
-                            //NO Tendrá disponible
+                            // NO Tendrá disponible
                             binding.IbEditar.visibility = View.GONE
                             binding.IbEliminar.visibility = View.GONE
 
-                            //SI tendrá disponible
+                            // SI tendrá disponible
                             binding.BtnMapa.visibility = View.VISIBLE
                             binding.BtnLlamar.visibility = View.VISIBLE
                             binding.BtnSms.visibility = View.VISIBLE
                             binding.BtnChat.visibility = View.VISIBLE
-                            binding.IbCarrito.visibility = View.VISIBLE
 
                             binding.TxtDescrVendedor.visibility = View.VISIBLE
                             binding.perfilVendedor.visibility = View.VISIBLE
+
+                            // Verificar el estado del anuncio
+                            if (estado == "Vendido") {
+                                binding.IbCarrito.visibility = View.GONE
+                            } else {
+                                binding.IbCarrito.visibility = View.VISIBLE
+                            }
                         }
 
-                        //Seteamos la información en las vistas
+                        // Seteamos la información en las vistas
                         binding.TvTitulo.text = titulo
                         binding.TvDescr.text = descripcion
                         binding.TvDireccion.text = direccion
@@ -264,7 +269,7 @@ class DetalleAnuncio : AppCompatActivity() {
                             binding.TvEstado.setTextColor(Color.RED)
                         }
 
-                        //Información del vendedor
+                        // Información del vendedor
                         cargarInfoVendedor()
 
                     } catch (e: Exception) {
@@ -278,6 +283,8 @@ class DetalleAnuncio : AppCompatActivity() {
             })
     }
 
+
+
     private fun marcarAnuncioVendido() {
         val hashMap = HashMap<String, Any>()
         hashMap["estado"] = Constantes.anuncio_vendido
@@ -287,7 +294,7 @@ class DetalleAnuncio : AppCompatActivity() {
             .updateChildren(hashMap)
             .addOnSuccessListener {
                 Toast.makeText(this,
-                    "El anuncio ha sido marcado como vendido",
+                    "El producto ha sido marcado como vendido",
                     Toast.LENGTH_SHORT)
                     .show()
             }
@@ -426,7 +433,7 @@ class DetalleAnuncio : AppCompatActivity() {
                 finishAffinity()
                 Toast.makeText(
                     this,
-                    "Se eliminó el anuncio con éxito",
+                    "Se eliminó el producto con éxito",
                     Toast.LENGTH_SHORT
                 ).show()
             }

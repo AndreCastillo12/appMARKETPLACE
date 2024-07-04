@@ -35,8 +35,8 @@ class FragmentMisAnuncios : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Mis anuncios"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Favoritos"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Mis Productos"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Mis Favoritos"))
         val fragmentManager = childFragmentManager
 
         mTabsViewPagerAdapter = MyTabsViewPagerAdapter(fragmentManager, lifecycle)

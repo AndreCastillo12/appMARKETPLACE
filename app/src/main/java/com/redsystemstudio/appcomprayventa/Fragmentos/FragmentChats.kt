@@ -74,7 +74,7 @@ class FragmentChats : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 chatsArrayList.clear()
                 for (ds in snapshot.children){
-                    val chatKey = "${ds.key}" //uidemisor_uidreceptor
+                    val chatKey = "${ds.key}"
                     if (chatKey.contains(miUid)){
                         val modeloChats = ModeloChats()
                         modeloChats.keyChat = chatKey

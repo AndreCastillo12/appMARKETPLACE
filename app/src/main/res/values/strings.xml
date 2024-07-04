@@ -10,7 +10,7 @@
     <string name="Item_Inicio">Inicio</string>
     <string name="Item_Chats">Chats</string>
     <string name="Item_vender">Vender</string>
-    <string name="Item_Mis_Anuncios">Anuncios</string>
+    <string name="Item_Mis_Anuncios">Productos</string>
     <string name="Item_Mi_Carrito">Carrito</string>
     <string name="Item_Cuenta">Cuenta</string>
 
@@ -52,7 +52,7 @@
     <string name="Btn_editar_perfil">Editar perfil</string>
     <string name="Btn_cambiar_pass">Cambiar contraseña</string>
     <string name="Btn_verificar_cuenta">Verificar cuenta</string>
-    <string name="Btn_eliminar_anuncios">Eliminar anuncios</string>
+    <string name="Btn_eliminar_anuncios">Eliminar productos</string>
     <string name="Btn_eliminar_cuenta">Eliminar cuenta</string>
     <string name="Btn_cerrar_sesion">Cerrar sesión</string>
 
@@ -72,7 +72,7 @@
     <string name="Et_precio">Precio</string>
     <string name="Et_titulo">Título</string>
     <string name="Et_descripcion">Descripción</string>
-    <string name="Btn_crear_anuncio">Crear anuncio</string>
+    <string name="Btn_crear_anuncio">Registrar producto</string>
 
     <!--Mapas-->
     <string name="Txt_selec_ubicacion">Seleccione ubicación</string>
@@ -95,13 +95,13 @@
     <string name="Tv_precio">00</string>
     <string name="Tv_fecha">dd/MM/yyyy</string>
 
-    <string name="Txt_detalle_info">Detalle del anuncio</string>
-    <string name="Tv_cat">Categoría del anuncio</string>
+    <string name="Txt_detalle_info">Detalle del producto</string>
+    <string name="Tv_cat">Categoría del producto</string>
     <string name="Txt_titulo">Titulo</string>
     <string name="Txt_descripcion">Descripción</string>
-    <string name="Tv_descr">Descripción del anuncio</string>
+    <string name="Tv_descr">Descripción del producto</string>
     <string name="Txt_direccion">Dirección</string>
-    <string name="Txt_vistas">Número de visitas del anuncio: </string>
+    <string name="Txt_vistas">Número de visitas del producto: </string>
     <string name="Tv_vistas">0</string>
     <string name="Txt_descr_vendedor">Descripción del vendedor</string>
     <string name="Txt_estado">Estado</string>
@@ -125,7 +125,7 @@
     <string name="Txt_marcar_vendido">¿Marcar como vendido el producto?</string>
 
     <string name="Txt_perfil_vendedor">Perfil del vendedor</string>
-    <string name="Txt_anuncios">Anuncios publicados:</string>
+    <string name="Txt_anuncios">Productos publicados:</string>
     <string name="Tv_num_anuncios">0</string>
 
     <string name="Txt_comentarios">Comentarios</string>

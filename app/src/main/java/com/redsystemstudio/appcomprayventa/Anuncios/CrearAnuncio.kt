@@ -67,11 +67,11 @@ class CrearAnuncio : AppCompatActivity() {
             //LLegamos de la actividad detalle anuncio
             idAnuncioEditar = intent.getStringExtra("idAnuncio") ?: ""
             cargarDetalles()
-            binding.BtnCrearAnuncio.text = "Actualizar anuncio"
+            binding.BtnCrearAnuncio.text = "Actualizar producto"
         }else{
             //False
             //LLegando de la actividad Main activity
-            binding.BtnCrearAnuncio.text = "Crear anuncio"
+            binding.BtnCrearAnuncio.text = "Crear producto"
         }
 
         imagenSelecArrayList = ArrayList()
@@ -184,7 +184,7 @@ class CrearAnuncio : AppCompatActivity() {
             binding.EtPrecio.requestFocus()
         }
         else if (titulo.isEmpty()){
-            binding.EtTitulo.error = "Ingrese un títuli"
+            binding.EtTitulo.error = "Ingrese un título"
             binding.EtTitulo.requestFocus()
         }
         else if (descripcion.isEmpty()){
@@ -208,7 +208,7 @@ class CrearAnuncio : AppCompatActivity() {
     }
 
     private fun actualizarAnuncio() {
-        progressDialog.setMessage("Actualizando anuncio")
+        progressDialog.setMessage("Actualizando producto")
         progressDialog.show()
 
         val hashMap = HashMap<String, Any>()
@@ -253,7 +253,7 @@ class CrearAnuncio : AppCompatActivity() {
         }
 
     private fun agregarAnuncio() {
-        progressDialog.setMessage("Agregando anuncio")
+        progressDialog.setMessage("Agregando producto")
         progressDialog.show()
 
         val tiempo = Constantes.obtenerTiempoDis()
@@ -319,7 +319,7 @@ class CrearAnuncio : AppCompatActivity() {
                             progressDialog.dismiss()
                             val intent = Intent(this@CrearAnuncio, MainActivity::class.java)
                             startActivity(intent)
-                            Toast.makeText(this, "Se actualizó la información del anuncio", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Se actualizó la información del producto", Toast.LENGTH_SHORT).show()
                             finishAffinity()
                         }else{
                             progressDialog.dismiss()
