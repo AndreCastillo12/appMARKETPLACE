@@ -39,23 +39,29 @@
             android:textStyle="bold|italic"
             android:textSize="20sp" />
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/Ingresar_email"
             android:text="@string/Ingresar_email"
             android:background="@drawable/background_btn"
             android:textAllCaps="true"
-            android:layout_width="match_parent"
-            android:layout_margin="10dp"
+            android:textColor="#ffffff"
+            android:textSize="16dp"
+            android:layout_width="330dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
             android:layout_height="@dimen/m_button_height"
             app:cornerRadius="8dp"/>
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/Ingresar_google"
             android:text="@string/Ingresar_google"
             android:background="@drawable/background_btn"
             android:textAllCaps="true"
-            android:layout_margin="10dp"
-            android:layout_width="match_parent"
+            android:textColor="#ffffff"
+            android:layout_gravity="center"
+            android:textSize="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_width="330dp"
             android:layout_height="@dimen/m_button_height"
             app:cornerRadius="8dp"/>
 
