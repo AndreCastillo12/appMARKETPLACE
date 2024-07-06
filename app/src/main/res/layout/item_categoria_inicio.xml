@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:background="@drawable/ripple_effect">
 
     <!--Icono de la categoría-->
     <com.google.android.material.imageview.ShapeableImageView
