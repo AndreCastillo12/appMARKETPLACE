@@ -38,8 +38,8 @@
     <string name="Txt_nombres">Nombres: </string>
     <string name="Tv_nombres">Nombres completos</string>
     <string name="Txt_email">Email: </string>
-    <string name="Tv_email">email@dominio.com</string>
-    <string name="Txt_nacimiento">Fecha de nac: </string>
+    <string name="Tv_email">email@gmail.com</string>
+    <string name="Txt_nacimiento">Fecha de nacimiento: </string>
     <string name="Tv_nacimiento">dd/mm/aaaa</string>
     <string name="Txt_miembro">Miembro desde: </string>
     <string name="Tv_miembro">dd/mm/aaaa</string>
@@ -166,6 +166,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string-array name="user_types">
+        <item>Administrador</item>
+        <item>Vendedor</item>
+    </string-array>
 
     <!--Carrito-->
     <string name="delete">borrar</string>

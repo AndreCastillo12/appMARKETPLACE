@@ -177,11 +177,32 @@
                         android:textColor="#717171"
                         android:textColorHint="#717171"
                         android:textSize="16sp" />
+
                 </com.google.android.material.textfield.TextInputLayout>
 
 
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo de usuario"
+                    android:textColor="#215f1f"
+                    android:textSize="16sp" />
 
+                <Spinner
+                    android:id="@+id/spinner_TipoUsuario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/Btn_registrar"
                 style="@android:style/Widget.Button"

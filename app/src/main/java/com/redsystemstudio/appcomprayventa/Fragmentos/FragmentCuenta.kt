@@ -88,7 +88,6 @@ class FragmentCuenta : Fragment() {
             }
 
             override fun onFinish() {
-                //Pasado 3 segundos se va a ejecutar estas líneas de código
                 firebaseAuth.signOut()
                 startActivity(Intent(mContext, OpcionesLogin::class.java))
                 activity?.finishAffinity()
@@ -101,7 +100,7 @@ class FragmentCuenta : Fragment() {
         val ref = FirebaseDatabase.getInstance().reference.child("Usuarios").child(firebaseAuth.uid!!)
 
         val hashMap = HashMap<String, Any>()
-        hashMap["estado"] = "Offline"
+        hashMap["estado"] = "Desconectado"
         ref!!.updateChildren(hashMap)
     }
 
@@ -136,6 +135,7 @@ class FragmentCuenta : Fragment() {
                     val telefono = "${snapshot.child("telefono").value}"
                     val codTelefono = "${snapshot.child("codigoTelefono").value}"
                     val proveedor = "${snapshot.child("proveedor").value}"
+                    val tipo = "${snapshot.child("tipoUsuario").value}"
 
                     val cod_tel = codTelefono+telefono
 
@@ -151,6 +151,7 @@ class FragmentCuenta : Fragment() {
                     binding.TvNacimiento.text = f_nac
                     binding.TvTelefono.text = cod_tel
                     binding.TvMiembro.text = for_tiempo
+                    binding.TvTipoCuenta.text = tipo
 
                     //Seteo de la imagen
                     try {
@@ -211,9 +212,7 @@ class FragmentCuenta : Fragment() {
                     "${e.message}",
                     Toast.LENGTH_SHORT
                 ).show()
-
             }
-
     }
 
     private fun verificarAnuncios() {

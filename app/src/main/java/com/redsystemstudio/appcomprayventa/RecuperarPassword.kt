@@ -62,23 +62,5 @@ class RecuperarPassword : AppCompatActivity() {
                 progressDialog.dismiss()
                 Toast.makeText(this, "No se enviaron las instrucciones",Toast.LENGTH_SHORT).show()
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }

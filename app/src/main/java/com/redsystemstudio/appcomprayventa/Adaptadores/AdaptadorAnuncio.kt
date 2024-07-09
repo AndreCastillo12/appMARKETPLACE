@@ -41,7 +41,6 @@ class AdaptadorAnuncio : RecyclerView.Adapter<AdaptadorAnuncio.HolderAnuncio>, F
         this.filtroLista = anuncioArrayList
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderAnuncio {
         binding = ItemAnuncioNuevaVersionBinding.inflate(LayoutInflater.from(context), parent, false)
         return HolderAnuncio(binding.root)
