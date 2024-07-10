@@ -79,30 +79,7 @@ class FragmentInicio : Fragment() {
 
         currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-        val opcionesFiltro = arrayOf(
-            "Más antiguos",
-            "Más recientes",
-            "Precio menor a mayor",
-            "Precio mayor a menor"
-        )
-        val adaptadorSpinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opcionesFiltro)
-        adaptadorSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerFiltro.adapter = adaptadorSpinner
-
-        binding.spinnerFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                when (position) {
-                    0 -> cargarAnuncios("Todos", "Más antiguos")
-                    1 -> cargarAnuncios("Todos", "Más recientes")
-                    2 -> cargarAnuncios("Todos", "Precio menor a mayor")
-                    3 -> cargarAnuncios("Todos", "Precio mayor a menor")
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-            }
-        }
-
+        filtrosSnniper()
         cargarCategorias()
         cargarAnuncios("Todos")
 
@@ -251,5 +228,31 @@ class FragmentInicio : Fragment() {
 
         val distanciaMetros = puntoPartida.distanceTo(puntoFinal).toDouble()
         return distanciaMetros / 1000
+    }
+
+    private fun filtrosSnniper() {
+        val opcionesFiltro = arrayOf(
+            "Más antiguos",
+            "Más recientes",
+            "Precio menor a mayor",
+            "Precio mayor a menor"
+        )
+        val adaptadorSpinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opcionesFiltro)
+        adaptadorSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerFiltro.adapter = adaptadorSpinner
+
+        binding.spinnerFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                when (position) {
+                    0 -> cargarAnuncios("Todos", "Más antiguos")
+                    1 -> cargarAnuncios("Todos", "Más recientes")
+                    2 -> cargarAnuncios("Todos", "Precio menor a mayor")
+                    3 -> cargarAnuncios("Todos", "Precio mayor a menor")
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
     }
 }
