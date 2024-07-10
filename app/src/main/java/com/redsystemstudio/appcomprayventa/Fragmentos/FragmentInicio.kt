@@ -9,12 +9,14 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -26,6 +28,7 @@ import com.redsystemstudio.appcomprayventa.Carrito
 import com.redsystemstudio.appcomprayventa.Constantes
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloAnuncio
 import com.redsystemstudio.appcomprayventa.Modelo.ModeloCategoria
+import com.redsystemstudio.appcomprayventa.R
 import com.redsystemstudio.appcomprayventa.RvListenerCategoria
 import com.redsystemstudio.appcomprayventa.SeleccionarUbicacion
 import com.redsystemstudio.appcomprayventa.databinding.FragmentInicioBinding
@@ -76,6 +79,30 @@ class FragmentInicio : Fragment() {
 
         currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
+        val opcionesFiltro = arrayOf(
+            "Más antiguos",
+            "Más recientes",
+            "Precio menor a mayor",
+            "Precio mayor a menor"
+        )
+        val adaptadorSpinner = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opcionesFiltro)
+        adaptadorSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerFiltro.adapter = adaptadorSpinner
+
+        binding.spinnerFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                when (position) {
+                    0 -> cargarAnuncios("Todos", "Más antiguos")
+                    1 -> cargarAnuncios("Todos", "Más recientes")
+                    2 -> cargarAnuncios("Todos", "Precio menor a mayor")
+                    3 -> cargarAnuncios("Todos", "Precio mayor a menor")
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
+
         cargarCategorias()
         cargarAnuncios("Todos")
 
@@ -85,9 +112,7 @@ class FragmentInicio : Fragment() {
         }
 
         binding.EtBuscar.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(filtro: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 try {
@@ -97,8 +122,7 @@ class FragmentInicio : Fragment() {
                 }
             }
 
-            override fun afterTextChanged(p0: Editable?) {
-            }
+            override fun afterTextChanged(p0: Editable?) {}
         })
 
         binding.IbLimpiar.setOnClickListener {
@@ -164,7 +188,7 @@ class FragmentInicio : Fragment() {
         binding.categoriaRv.adapter = adaptadorCategoria
     }
 
-    private fun cargarAnuncios(categoria : String){
+    private fun cargarAnuncios(categoria : String, filtro: String? = null){
         anuncioArrayList = ArrayList()
 
         val ref = FirebaseDatabase.getInstance().getReference("Anuncios")
@@ -195,6 +219,17 @@ class FragmentInicio : Fragment() {
                     } catch (e:Exception) {
                     }
                 }
+
+                // Aplicar filtro si está definido
+                filtro?.let {
+                    when (it) {
+                        "Más antiguos" -> anuncioArrayList.sortBy { it.tiempo }
+                        "Más recientes" -> anuncioArrayList.sortByDescending { it.tiempo }
+                        "Precio menor a mayor" -> anuncioArrayList.sortBy { it.precio.toDoubleOrNull() }
+                        "Precio mayor a menor" -> anuncioArrayList.sortByDescending { it.precio.toDoubleOrNull() }
+                    }
+                }
+
                 adaptadorAnuncio = AdaptadorAnuncio(mContext, anuncioArrayList)
                 binding.anunciosRv.adapter = adaptadorAnuncio
             }

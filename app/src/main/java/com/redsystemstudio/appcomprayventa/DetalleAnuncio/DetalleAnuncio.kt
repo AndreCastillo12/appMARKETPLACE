@@ -155,7 +155,6 @@ class DetalleAnuncio : AppCompatActivity() {
         binding.IvInfoVendedor.setOnClickListener {
             val intent = Intent(this, DetalleVendedor::class.java)
             intent.putExtra("uidVendedor", uidVendedor)
-            Toast.makeText(this, "El uid del vendedor es $uidVendedor", Toast.LENGTH_SHORT).show()
             startActivity(intent)
         }
     }
