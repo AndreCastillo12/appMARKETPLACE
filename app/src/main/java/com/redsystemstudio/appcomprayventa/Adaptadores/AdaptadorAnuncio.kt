@@ -30,16 +30,17 @@ class AdaptadorAnuncio : RecyclerView.Adapter<AdaptadorAnuncio.HolderAnuncio>, F
 
     private var context : Context
     var anuncioArrayList : ArrayList<ModeloAnuncio>
-    private var firebaeAuth : FirebaseAuth
+    private var firebaseAuth : FirebaseAuth
     private var filtroLista : ArrayList<ModeloAnuncio>
     private var filtro : FiltrarAnuncio ?= null
 
     constructor(context: Context, anuncioArrayList: ArrayList<ModeloAnuncio>) {
         this.context = context
         this.anuncioArrayList = anuncioArrayList
-        firebaeAuth = FirebaseAuth.getInstance()
+        firebaseAuth = FirebaseAuth.getInstance()
         this.filtroLista = anuncioArrayList
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HolderAnuncio {
         binding = ItemAnuncioNuevaVersionBinding.inflate(LayoutInflater.from(context), parent, false)
@@ -103,7 +104,7 @@ class AdaptadorAnuncio : RecyclerView.Adapter<AdaptadorAnuncio.HolderAnuncio>, F
 
     private fun comprobarFavorito(modeloAnuncio: ModeloAnuncio, holder: AdaptadorAnuncio.HolderAnuncio) {
         val ref = FirebaseDatabase.getInstance().getReference("Usuarios")
-        ref.child(firebaeAuth.uid!!).child("Favoritos").child(modeloAnuncio.id)
+        ref.child(firebaseAuth.uid!!).child("Favoritos").child(modeloAnuncio.id)
             .addValueEventListener(object : ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val favorito = snapshot.exists()

@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -33,7 +34,6 @@ class FragmentInicio : Fragment() {
 
     private lateinit var binding : FragmentInicioBinding
 
-
     private companion object{
         private const val MAX_DISTANCIA_MOSTRAR_ANUNCIO = 10
     }
@@ -47,6 +47,8 @@ class FragmentInicio : Fragment() {
     private var actualLatitud = 0.0
     private var actualLongitud = 0.0
     private var actualDireccion = ""
+
+    private lateinit var currentUserId: String
 
     override fun onAttach(context: Context) {
         mContext = context
@@ -72,6 +74,8 @@ class FragmentInicio : Fragment() {
             binding.TvLocacion.text = actualDireccion
         }
 
+        currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
         cargarCategorias()
         cargarAnuncios("Todos")
 
@@ -89,13 +93,11 @@ class FragmentInicio : Fragment() {
                 try {
                     val consulta = filtro.toString()
                     adaptadorAnuncio.filter.filter(consulta)
-                }catch (e:Exception){
-
+                } catch (e:Exception) {
                 }
             }
 
             override fun afterTextChanged(p0: Editable?) {
-
             }
         })
 
@@ -104,7 +106,7 @@ class FragmentInicio : Fragment() {
             if (consulta.isNotEmpty()){
                 binding.EtBuscar.setText("")
                 Toast.makeText(context,"Se ha limpiado el campo de búsqueda",Toast.LENGTH_SHORT).show()
-            }else{
+            } else {
                 Toast.makeText(context,"No se ha ingresado una consulta",Toast.LENGTH_SHORT).show()
             }
         }
@@ -113,8 +115,6 @@ class FragmentInicio : Fragment() {
             val intent = Intent(mContext, Carrito::class.java)
             startActivity(intent)
         }
-
-
     }
 
     private val seleccionarUbicacionARL = registerForActivityResult(
@@ -135,7 +135,7 @@ class FragmentInicio : Fragment() {
                 binding.TvLocacion.text = actualDireccion
 
                 cargarAnuncios("Todos")
-            }else{
+            } else {
                 Toast.makeText(
                     context, "Cancelado",Toast.LENGTH_SHORT
                 ).show()
@@ -178,33 +178,34 @@ class FragmentInicio : Fragment() {
                             modeloAnuncio?.latitud ?: 0.0,
                             modeloAnuncio?.longitud ?: 0.0
                         )
-                        if (categoria == "Todos"){
-                            if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){
-                                anuncioArrayList.add(modeloAnuncio!!)
-                            }
-                        }else{
-                            if (modeloAnuncio!!.categoria.equals(categoria)){
+
+                        if (modeloAnuncio?.uid != currentUserId) {
+                            if (categoria == "Todos"){
                                 if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){
-                                    anuncioArrayList.add(modeloAnuncio)
+                                    anuncioArrayList.add(modeloAnuncio!!)
+                                }
+                            } else {
+                                if (modeloAnuncio!!.categoria == categoria){
+                                    if (distancia <= MAX_DISTANCIA_MOSTRAR_ANUNCIO){
+                                        anuncioArrayList.add(modeloAnuncio)
+                                    }
                                 }
                             }
                         }
-                    }catch (e:Exception){
-
+                    } catch (e:Exception) {
                     }
                 }
                 adaptadorAnuncio = AdaptadorAnuncio(mContext, anuncioArrayList)
                 binding.anunciosRv.adapter = adaptadorAnuncio
-
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+                // Manejo de errores
             }
         })
     }
 
-    private fun calcularDistanciaKM(latitud : Double , longitud : Double) : Double{
+    private fun calcularDistanciaKM(latitud: Double, longitud: Double) : Double{
         val puntoPartida = Location(LocationManager.NETWORK_PROVIDER)
         puntoPartida.latitude = actualLatitud
         puntoPartida.longitude = actualLongitud
@@ -214,8 +215,6 @@ class FragmentInicio : Fragment() {
         puntoFinal.longitude = longitud
 
         val distanciaMetros = puntoPartida.distanceTo(puntoFinal).toDouble()
-        return distanciaMetros/1000
-        }
-
-
+        return distanciaMetros / 1000
+    }
 }
