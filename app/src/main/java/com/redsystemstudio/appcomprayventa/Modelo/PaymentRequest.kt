@@ -24,6 +24,24 @@ data class Transaction(
     val userAgent: String
 )
 
+data class ModeloAnuncio(
+    var id: String = "",
+    var uid: String = "",
+    var marca: String = "",
+    var categoria: String = "",
+    var condicion: String = "",
+    var direccion: String = "",
+    var precio: String = "",
+    var titulo: String = "",
+    var descripcion: String = "",
+    var estado: String = "",
+    var tiempo: Long = 0,
+    var latitud: Double = 0.0,
+    var longitud: Double = 0.0,
+    var favorito: Boolean = false,
+    var contadorVistas: Int = 0
+)
+
 data class Order(
     val accountId: String,
     val referenceCode: String,

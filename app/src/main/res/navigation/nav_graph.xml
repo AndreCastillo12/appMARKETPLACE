@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/adminHomeFragment">
+
+    <fragment
+        android:id="@+id/adminHomeFragment"
+        android:name="com.redsystemstudio.appcomprayventa.AdminHomeFragment"
+        android:label="Admin Home"
+        tools:layout="@layout/activity_admin_home_fragment">
+        <action
+            android:id="@+id/action_adminHomeFragment_to_manageProductsFragment"
+            app:destination="@id/manageProductsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/manageProductsFragment"
+        android:name="com.redsystemstudio.appcomprayventa.ManageProductsFragment"
+        android:label="Manage Products"
+        tools:layout="@layout/activity_manage_products_fragment" />
+</navigation>

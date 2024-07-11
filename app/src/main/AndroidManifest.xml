@@ -29,13 +29,19 @@
         android:theme="@style/Theme.AppCompraYVenta"
         tools:targetApi="31">
         <activity
-            android:name=".Utils.SignatureUtils"
+            android:name=".ManageProductsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManageUsersFragment"
+            android:exported="false" />
+        <activity
+            android:name=".ManageProductsFragment"
+            android:exported="false" />
+        <activity
+            android:name=".AdminActivity"
             android:exported="false" />
         <activity
             android:name=".ConfirmacionPagoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RetrofitClient"
             android:exported="false" />
         <activity
             android:name=".PagoActivity"
